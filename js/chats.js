@@ -15,11 +15,18 @@ function openBotChat(botId) {
 function openSession(sessionId) {
   const s = DB.session(sessionId);
   if (!s) return;
-  if (State.generating) stopGeneration();
+  /* generation for the chat being LEFT keeps running in the background
+     (see the Generations map above) — nothing to stop here. */
   State.view = "chat";
   State.botId = s.botId;
   State.sessionId = sessionId;
-  State.msgs = DB.getMsgs(sessionId);
+
+  /* if this session has a generation still running in the background,
+     reattach to its live (in-memory, not-yet-persisted) message array
+     instead of re-reading from disk, so the still-streaming reply isn't
+     lost or duplicated. */
+  const gen = Generations.get(sessionId);
+  State.msgs = (gen && gen.msgs) ? gen.msgs : DB.getMsgs(sessionId);
   State.tempOverride = null;
   State.systemOverride = null;
   clearPendingImage();
@@ -42,6 +49,8 @@ function openSession(sessionId) {
   renderMessages();
   renderSidebar();
   renderModeButton();
+  setSendButton(!!gen);
+  if (gen && gen.attachDom) gen.attachDom();
   $("msg-input").focus();
 }
 
@@ -178,14 +187,14 @@ function startRenameSession(s, row, titleEl) {
   input.onclick = e => e.stopPropagation();
 }
 
-function deleteSessionUI(id) {
-  if (!confirm("Delete this chat? Its messages will be gone forever.")) return;
+async function deleteSessionUI(id) {
+  if (!await appConfirm("Its messages will be gone forever.", { title: "Delete this chat?" })) return;
   const wasActive = State.sessionId === id;
   const botId = DB.session(id)?.botId;
   DB.deleteSession(id);
   toast("Chat deleted");
+  stopGenerationFor(id);
   if (wasActive) {
-    if (State.generating) stopGeneration();
     State.sessionId = null;
     State.msgs = [];
     openBotChat(botId); // opens most recent remaining session or a fresh one
@@ -341,19 +350,21 @@ function autoGrow() {
   input.style.height = Math.min(input.scrollHeight, 170) + "px";
 }
 
-function persistMsgs() {
-  DB.saveMsgs(State.sessionId, State.msgs);
-  const s = DB.session(State.sessionId);
+function persistMsgs() { persistMsgsFor(State.sessionId, State.msgs); }
+
+function persistMsgsFor(sessionId, msgs) {
+  DB.saveMsgs(sessionId, msgs);
+  const s = DB.session(sessionId);
   if (!s) return;
   s.updatedAt = Date.now();
-  const last = [...State.msgs].reverse().find(m => !m.local);
+  const last = [...msgs].reverse().find(m => !m.local);
   s.snippet = last ? ((last.role === "user" ? "You: " : "") + last.content.slice(0, 60)) : "";
   if (s.title === "New Chat") {
-    const firstUser = State.msgs.find(m => m.role === "user");
+    const firstUser = msgs.find(m => m.role === "user");
     if (firstUser) s.title = firstUser.content.slice(0, 42);
   }
   DB.saveSessions();
-  renderChatHeader();
+  if (isActiveSession(sessionId)) renderChatHeader();
   renderSidebar();
 }
 
@@ -376,9 +387,12 @@ function buildCharacterPrompt(bot, persona) {
   return sys;
 }
 
-function buildApiMessages() {
-  const bot = DB.bot(State.botId);
-  let sys = State.systemOverride || buildCharacterPrompt(bot, DB.activePersona());
+function buildApiMessages(botId, msgs, systemOverride) {
+  botId = botId ?? State.botId;
+  msgs = msgs ?? State.msgs;
+  systemOverride = arguments.length > 2 ? systemOverride : State.systemOverride;
+  const bot = DB.bot(botId);
+  let sys = systemOverride || buildCharacterPrompt(bot, DB.activePersona());
   sys += "\n\nFormatting: whenever you write any multi-line code, a full snippet, a config file, or " +
     "anything meant to be copied/run/saved — ALWAYS wrap it in a triple-backtick fenced code block with " +
     "the language named right after the backticks (e.g. ```python or ```javascript), never as plain text " +
@@ -467,7 +481,7 @@ function buildApiMessages() {
   if (modeInstruction) sys += "\n\n" + modeInstruction;
   const arr = [{ role: "system", content: sys }];
   if (bot.greeting) arr.push({ role: "assistant", content: bot.greeting });
-  for (const m of State.msgs) {
+  for (const m of msgs) {
     if (m.error || m.local) continue;
     if (m.image) {
       arr.push({
@@ -484,8 +498,28 @@ function buildApiMessages() {
   return arr;
 }
 
+/* ---------- background generation ----------
+   Keyed by sessionId so a reply keeps streaming/persisting even after
+   the user navigates to another chat or Home — only the live DOM
+   (#messages, State.msgs, the send/stop button) is gated behind
+   "is this session still the one on screen", checked fresh on every
+   delta/finish rather than once at the start. `msgs` is the same array
+   reference generate() is appending to, and `reply`/`bot` let a chat
+   reattach to a still-streaming reply if the user comes back mid-stream. */
+const Generations = new Map();  // sessionId -> { abort, msgs, bot, reply }
+
+function isActiveSession(sessionId) { return State.sessionId === sessionId; }
+
+/* stops a specific session's background generation (used when deleting
+   that chat) — distinct from stopGeneration(), which only ever stops
+   whichever session is currently on screen (the stop button's target). */
+function stopGenerationFor(sessionId) {
+  const gen = Generations.get(sessionId);
+  if (gen) gen.abort.abort();
+}
+
 async function sendMessage() {
-  if (State.generating) { stopGeneration(); return; }
+  if (State.sessionId && Generations.has(State.sessionId)) { stopGeneration(); return; }
   const input = $("msg-input");
   const text = input.value.trim();
   const image = State.pendingImage;
@@ -506,7 +540,7 @@ async function sendMessage() {
   clearPendingImage();
   persistMsgs();
   renderMessages();
-  await generate();
+  generate(State.sessionId, State.botId, State.msgs, State.tempOverride, State.systemOverride);
 }
 
 /* a reply that hit the token limit mid code-fence (odd number of ```)
@@ -517,34 +551,64 @@ function looksCutOff(text, finishReason) {
   return fences % 2 === 1;
 }
 
+/* auto-continue asks the model to "continue where you left off", but
+   despite that instruction some models restate the tail of what they
+   already wrote instead of only adding new text — if the continuation's
+   start overlaps with the end of what came before, drop the duplicate
+   part rather than showing it twice. */
+function dedupeContinuation(before, after) {
+  const maxOverlap = Math.min(before.length, after.length, 400);
+  for (let len = maxOverlap; len >= 20; len--) {
+    if (before.slice(-len) === after.slice(0, len)) return after.slice(len);
+  }
+  return after;
+}
+
 const MAX_AUTO_CONTINUES = 3;
 
-async function generate() {
-  const bot = DB.bot(State.botId);
+/* msgs/tempOverride/systemOverride are snapshotted at call time (the
+   moment the user hits send/regenerate/edit, when this session is
+   always the active one) so the request itself is unaffected by the
+   user navigating elsewhere mid-stream. */
+async function generate(sessionId, botId, msgs, tempOverride, systemOverride) {
+  const bot = DB.bot(botId);
   if (!bot) return;
-  State.generating = true;
-  setSendButton(true);
-
-  const box = $("messages");
-  const wrap = el("div", "msg bot msg-enter");
-  wrap.appendChild(avatarNode(bot, "sm"));
-  const col = el("div", "msg-col");
-  const bubble = el("div", "msg-bubble streaming");
-  /* typing indicator: three bouncing dots until the first token lands */
-  const typing = el("div", "typing");
-  typing.innerHTML = "<span></span><span></span><span></span>";
-  bubble.appendChild(typing);
-  const cursor = el("span", "cursor");
-  col.appendChild(bubble);
-  wrap.appendChild(col);
-  box.appendChild(wrap);
-  scrollBottom();
-
   let reply = "";
-  let chunks = 0;
   let firstToken = true;
+
+  /* (re)creates the streaming bubble DOM — called immediately if this
+     session is on screen when generation starts, and again from
+     openSession() if the user navigates back mid-stream. */
+  const attachDom = () => {
+    const box = $("messages");
+    const wrap = el("div", "msg bot msg-enter");
+    wrap.appendChild(avatarNode(bot, "sm"));
+    const col = el("div", "msg-col");
+    const bubble = el("div", "msg-bubble streaming");
+    const cursor = el("span", "cursor");
+    if (firstToken) {
+      const typing = el("div", "typing");
+      typing.innerHTML = "<span></span><span></span><span></span>";
+      bubble.appendChild(typing);
+      gen.typing = typing;
+    } else {
+      bubble.innerHTML = renderMarkdown(reply);
+      bubble.appendChild(cursor);
+    }
+    col.appendChild(bubble);
+    wrap.appendChild(col);
+    box.appendChild(wrap);
+    gen.bubble = bubble;
+    gen.cursor = cursor;
+    scrollBottom();
+  };
+
+  const gen = { abort: new AbortController(), msgs, bot, attachDom, bubble: null, cursor: null, typing: null };
+  Generations.set(sessionId, gen);
+  if (isActiveSession(sessionId)) { setSendButton(true); attachDom(); }
+
+  let chunks = 0;
   const t0 = performance.now();
-  State.abort = new AbortController();
 
   /* live markdown preview while streaming: re-render at most once per
      animation frame (not on every token) so fast local models don't
@@ -555,29 +619,33 @@ async function generate() {
      block until its closing ``` arrives, rather than breaking. */
   let renderScheduled = false;
   const scheduleRender = () => {
-    if (renderScheduled) return;
+    if (renderScheduled || !isActiveSession(sessionId)) return;
     renderScheduled = true;
     requestAnimationFrame(() => {
       renderScheduled = false;
-      bubble.innerHTML = renderMarkdown(reply);
-      bubble.appendChild(cursor);
+      if (!isActiveSession(sessionId)) return;
+      gen.bubble.innerHTML = renderMarkdown(reply);
+      gen.bubble.appendChild(gen.cursor);
       scrollBottomIfNear();
     });
   };
 
   const onDelta = d => {
-    if (firstToken) { typing.remove(); bubble.appendChild(cursor); firstToken = false; }
+    if (firstToken) {
+      firstToken = false;
+      if (isActiveSession(sessionId)) { gen.typing.remove(); gen.bubble.appendChild(gen.cursor); }
+    }
     reply += d;
     scheduleRender();
   };
 
   try {
-    const temp = State.tempOverride ?? bot.temp ?? 0.8;
+    const temp = tempOverride ?? bot.temp ?? 0.8;
     let result = await streamChat({
-      messages: buildApiMessages(),
+      messages: buildApiMessages(botId, msgs, systemOverride),
       temperature: temp,
       topP: bot.topP,
-      signal: State.abort.signal,
+      signal: gen.abort.signal,
       onDelta
     });
     chunks = result.chunks;
@@ -586,60 +654,71 @@ async function generate() {
     while (DB.settings.autoContinue && looksCutOff(reply, result.finishReason) &&
            continues < MAX_AUTO_CONTINUES) {
       continues++;
-      const contMessages = buildApiMessages();
+      const beforeContinue = reply;
+      const contMessages = buildApiMessages(botId, msgs, systemOverride);
       contMessages.push({ role: "assistant", content: reply });
       contMessages.push({ role: "user", content: "Continue exactly where you left off. Do not repeat any earlier text, do not add commentary — just continue the response (e.g. finish the code block/file) from the exact cutoff point." });
       result = await streamChat({
         messages: contMessages,
         temperature: temp,
         topP: bot.topP,
-        signal: State.abort.signal,
+        signal: gen.abort.signal,
         onDelta
       });
       chunks += result.chunks;
+
+      /* strip an accidentally-repeated tail: dedupe against everything
+         added by this continuation round, then re-render once so the
+         user never sees the duplicate flash by even for one frame. */
+      const deduped = beforeContinue + dedupeContinuation(beforeContinue, reply.slice(beforeContinue.length));
+      if (deduped !== reply) {
+        reply = deduped;
+        if (isActiveSession(sessionId)) { gen.bubble.innerHTML = renderMarkdown(reply); gen.bubble.appendChild(gen.cursor); }
+      }
     }
 
-    finishReply(reply, chunks, t0, false);
+    Generations.delete(sessionId);
+    finishReply(sessionId, msgs, reply, chunks, t0, false);
   } catch (err) {
+    Generations.delete(sessionId);
     if (err.name === "AbortError") {
-      finishReply(reply, chunks, t0, true);
+      finishReply(sessionId, msgs, reply, chunks, t0, true);
     } else {
       const hint = /Failed to fetch|NetworkError|load failed/i.test(err.message)
         ? "Can't reach the server at " + apiBase() +
           "\n\n• Is your AI model server running?\n• Check the URL in ⚙️ Settings.\n• If it IS running, it may need CORS enabled."
         : err.message;
-      State.msgs.push({ id: uid("m"), role: "assistant", content: "⚠️ " + hint, ts: Date.now(), error: true });
-      persistMsgs();
-      renderMessages();
+      msgs.push({ id: uid("m"), role: "assistant", content: "⚠️ " + hint, ts: Date.now(), error: true });
+      persistMsgsFor(sessionId, msgs);
+      if (isActiveSession(sessionId)) renderMessages();
       checkConnection();
     }
   } finally {
-    State.generating = false;
-    State.abort = null;
-    setSendButton(false);
+    if (isActiveSession(sessionId)) setSendButton(false);
   }
 }
 
-function finishReply(reply, chunks, t0, stopped) {
+function finishReply(sessionId, msgs, reply, chunks, t0, stopped) {
   if (reply) {
     const secs = Math.max(0.05, (performance.now() - t0) / 1000);
     const tok = chunks || Math.max(1, Math.round(reply.length / 4));
-    State.msgs.push({
+    msgs.push({
       id: uid("m"), role: "assistant", content: reply, ts: Date.now(),
       stats: { tok, tps: (tok / secs).toFixed(1) }
     });
   } else {
-    State.msgs.push({
+    msgs.push({
       id: uid("m"), role: "assistant", ts: Date.now(), error: true,
       content: stopped ? "(stopped)" : "(no response — is a model loaded on the server?)"
     });
   }
-  persistMsgs();
-  renderMessages();
+  persistMsgsFor(sessionId, msgs);
+  if (isActiveSession(sessionId)) renderMessages();
 }
 
 function stopGeneration() {
-  if (State.abort) State.abort.abort();
+  const gen = Generations.get(State.sessionId);
+  if (gen) gen.abort.abort();
 }
 
 /* ---------- message actions ---------- */
@@ -662,14 +741,14 @@ function exportCurrentChat() {
 }
 
 function deleteMessage(i) {
-  if (State.generating) return;
+  if (Generations.has(State.sessionId)) return;
   State.msgs.splice(i, 1);
   persistMsgs();
   renderMessages();
 }
 
 function editUserMessage(i) {
-  if (State.generating) return;
+  if (Generations.has(State.sessionId)) return;
   const m = State.msgs[i];
   if (!m) return;
   renderMessages();
@@ -699,7 +778,7 @@ function editUserMessage(i) {
     State.msgs = State.msgs.slice(0, i + 1); // everything after gets regenerated
     persistMsgs();
     renderMessages();
-    await generate();
+    generate(State.sessionId, State.botId, State.msgs, State.tempOverride, State.systemOverride);
   };
   ta.onkeydown = e => {
     if (e.key === "Enter" && (e.ctrlKey || e.metaKey)) saveB.onclick();

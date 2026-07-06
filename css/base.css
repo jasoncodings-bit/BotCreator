@@ -69,12 +69,14 @@ button { font-family: inherit; }
 
 /* ==================== SIDEBAR ==================== */
 #sidebar {
-  width: 300px;
-  min-width: 300px;
+  width: var(--sidebar-width, 300px);
+  min-width: 220px;
+  max-width: 480px;
   background: var(--bg-2);
   border-right: 1px solid var(--border);
   display: flex;
   flex-direction: column;
+  flex-shrink: 0;
 }
 #sidebar-header {
   height: 68px;
@@ -169,12 +171,19 @@ button { font-family: inherit; }
 .session-item.active { background: var(--accent-soft); border-color: var(--accent); }
 .s-info { flex: 1; min-width: 0; }
 .s-top { display: flex; justify-content: space-between; align-items: baseline; gap: 8px; }
+.s-top-left { display: flex; align-items: baseline; gap: 6px; min-width: 0; }
 .s-bot {
   font-size: 13.5px;
   font-weight: 600;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+}
+.s-generating {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--accent);
+  flex-shrink: 0;
 }
 .s-time { font-size: 11px; color: var(--text-dim); flex-shrink: 0; }
 .s-snippet {

@@ -15,8 +15,8 @@ const SLASH_COMMANDS = {
   },
   clear: {
     hint: "Wipe this chat's messages and start fresh",
-    run: () => {
-      if (!confirm("Clear all messages in this chat? This can't be undone.")) return;
+    run: async () => {
+      if (!await appConfirm("This can't be undone.", { title: "Clear all messages in this chat?" })) return;
       State.msgs = [];
       persistMsgs();
       renderMessages();
@@ -135,13 +135,13 @@ async function compactChat() {
 /* ---------- /regen ---------- */
 
 function regenerateLast() {
-  if (State.generating) return;
+  if (Generations.has(State.sessionId)) return;
   for (let i = State.msgs.length - 1; i >= 0; i--) {
     if (!State.msgs[i].local && State.msgs[i].role === "assistant") {
       State.msgs.splice(i, 1);
       persistMsgs();
       renderMessages();
-      generate();
+      generate(State.sessionId, State.botId, State.msgs, State.tempOverride, State.systemOverride);
       return;
     }
   }

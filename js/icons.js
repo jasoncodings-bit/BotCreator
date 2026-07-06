@@ -75,7 +75,7 @@ const ICONS = {
   brew: '<path d="M5 9h11v6a4 4 0 0 1-4 4H9a4 4 0 0 1-4-4Z"/><path d="M16 11h1.5a2 2 0 0 1 0 4H16"/><path d="M9 3c0 1-1 1-1 2s1 1 1 2M13 3c0 1-1 1-1 2s1 1 1 2"/>'
 };
 
-const AVATAR_ICONS = ["bot","skull","ghost","crown","sword","shield","rocket","star","flame","snowflake","gamepad","music","cpu","gem","cat","wizard","eye","zap","heart","globe","anchor","book","flask","dice","pickaxe","alien","target","code","vampire","butler","sprout","eyetri","brew"];
+const AVATAR_ICONS = ["bot","skull","ghost","crown","sword","shield","rocket","star","flame","snowflake","gamepad","music","cpu","gem","cat","wizard","eye","zap","heart","globe","anchor","book","flask","dice","pickaxe","alien","target","code","vampire","butler"];
 
 /* solid-shape path data for the small everyday UI icons (favorite,
    add, remove, confirm, delete) — these are simple enough to read

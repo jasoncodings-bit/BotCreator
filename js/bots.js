@@ -5,7 +5,7 @@
    advanced character options (scenario, examples, top_p)
    ============================================================ */
 
-const BOT_COLORS = ["", "#7c5cff", "#4bc0ff", "#3ddc84", "#ffb020", "#ff5c6c", "#ff7ad9", "#20c9b7", "#8a94a8"];
+const BOT_COLORS = ["", "#7c5cff", "#4bc0ff", "#3ddc84", "#ffb020", "#ff5c6c"];
 
 let editingBotId = null;   // null = creating a new bot
 let editorIcon = "bot";
@@ -246,10 +246,10 @@ function saveBotFromEditor() {
   }
 }
 
-function deleteBotFromEditor() {
+async function deleteBotFromEditor() {
   if (!editingBotId) return;
   const bot = DB.bot(editingBotId);
-  if (!confirm('Delete "' + bot.name + '" and ALL of its chats? This cannot be undone.')) return;
+  if (!await appConfirm("ALL of its chats will be deleted too. This cannot be undone.", { title: 'Delete "' + bot.name + '"?' })) return;
   DB.deleteBot(editingBotId);
   if (State.botId === editingBotId) goHome();
   closeBotEditor();
@@ -275,10 +275,9 @@ function duplicateBotFromEditor() {
 
 function exportBotFromEditor() {
   if (!editingBotId) return;
-  const bot = DB.bot(editingBotId);
-  downloadJson({ type: "botforge-bot", bot },
-    bot.name.replace(/[^\w\- ]+/g, "").trim().replace(/\s+/g, "-").toLowerCase() + ".botforge.json");
-  toast("Bot saved as a file — share it with friends!");
+  /* opens the export-options modal (persona only vs. persona + chat
+     history) instead of downloading immediately — see js/botexport.js */
+  openBotExportModal(editingBotId);
 }
 
 /* ---------- category manager modal ---------- */
@@ -310,8 +309,8 @@ function renderCategoryList() {
     const count = DB.bots.filter(b => b.category === cat.id).length;
     row.appendChild(el("span", "category-count", count + (count === 1 ? " bot" : " bots")));
     const del = iconBtn("trash", "btn sm danger icon-only", "Delete category", null, true);
-    del.onclick = () => {
-      if (count && !confirm('Delete "' + cat.name + '"? ' + count + ' bot(s) will become Uncategorized.')) return;
+    del.onclick = async () => {
+      if (count && !await appConfirm(count + ' bot(s) will become Uncategorized.', { title: 'Delete "' + cat.name + '"?' })) return;
       DB.deleteCategory(cat.id);
       renderCategoryList();
       refreshAll();

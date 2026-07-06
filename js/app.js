@@ -8,8 +8,6 @@ const State = {
   botId: null,
   sessionId: null,
   msgs: [],
-  generating: false,
-  abort: null,
   userScrolledUp: false,
   tempOverride: null,   // set by /temp, reset whenever a session is (re-)opened
   systemOverride: null, // set by /system <text>, reset whenever a session is (re-)opened
@@ -17,12 +15,20 @@ const State = {
 };
 
 function showView() {
-  $("home-view").hidden = State.view !== "home";
-  $("chat-view").hidden = State.view !== "chat";
+  const home = $("home-view");
+  const chat = $("chat-view");
+  const showHome = State.view === "home";
+  const showChat = State.view === "chat";
+
+  if (showHome && home.hidden) fadeInView(home);
+  if (showChat && chat.hidden) fadeInView(chat);
+  if (!showHome) home.hidden = true;
+  if (!showChat) chat.hidden = true;
 }
 
 function goHome() {
-  if (State.generating) stopGeneration();
+  /* any in-flight generation for the chat being left keeps running in
+     the background (see Generations in js/chats.js) */
   State.view = "home";
   State.botId = null;
   State.sessionId = null;
@@ -67,7 +73,10 @@ function renderSidebar() {
 
     const info = el("div", "s-info");
     const top = el("div", "s-top");
-    top.appendChild(el("span", "s-bot", bot.name));
+    const left = el("div", "s-top-left");
+    left.appendChild(el("span", "s-bot", bot.name));
+    if (Generations.has(s.id)) left.appendChild(el("span", "s-generating", "Generating…"));
+    top.appendChild(left);
     top.appendChild(el("span", "s-time", timeAgo(s.updatedAt)));
     info.appendChild(top);
     info.appendChild(el("div", "s-snippet", s.snippet || s.title));
@@ -168,6 +177,9 @@ function init() {
   wireStaticIcons();
   applyTheme();
   applyDyslexiaFont();
+  applyAppearance();
+  applySidebarWidth();
+  wireSidebarResize();
 
   /* sidebar */
   $("home-btn").onclick = () => { goHome(); closeSidebar(); };
@@ -366,7 +378,9 @@ function init() {
   wireBotEditor();
   wireCategoryManager();
   wireSettings();
-  for (const id of ["bot-modal", "settings-modal", "category-modal"]) {
+  wireBotExportModal();
+  wireConfirmModal();
+  for (const id of ["bot-modal", "settings-modal", "category-modal", "bot-export-modal"]) {
     $(id).addEventListener("mousedown", e => {
       if (e.target === $(id)) $(id).classList.remove("open");
     });
@@ -378,6 +392,7 @@ function init() {
       $("bot-modal").classList.remove("open");
       $("settings-modal").classList.remove("open");
       $("category-modal").classList.remove("open");
+      if ($("confirm-modal").classList.contains("open")) _settleConfirm(false);
       closeHistoryPopover();
       closeModePopover();
       closeCommandPopover();
@@ -394,9 +409,9 @@ function init() {
     if (!e.target.closest("#mode-wrap")) closeModePopover();
   });
 
-  /* stop nice-to-know: warn if leaving mid-generation */
+  /* stop nice-to-know: warn if any chat (viewed or backgrounded) is still generating */
   window.addEventListener("beforeunload", e => {
-    if (State.generating) e.preventDefault();
+    if (Generations.size) e.preventDefault();
   });
 
   showView();
@@ -404,6 +419,7 @@ function init() {
   renderSidebar();
   checkConnection();
   setInterval(checkConnection, 30000);
+  syncCuratedBots();
 }
 
 document.addEventListener("DOMContentLoaded", init);

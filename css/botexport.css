@@ -1,0 +1,57 @@
+/* ============================================================
+   Bot export options modal (see js/botexport.js) — the
+   persona-only vs. persona+history picker.
+   ============================================================ */
+
+#bot-export-modal .bx-botname { color: var(--accent); }
+#bot-export-modal .bx-sub {
+  margin: 0 0 14px 0;
+  font-size: 13px;
+  color: var(--text-dim);
+}
+
+.bx-option {
+  display: flex;
+  align-items: flex-start;
+  gap: 11px;
+  padding: 12px 13px;
+  margin-bottom: 10px;
+  border: 1px solid var(--border);
+  border-radius: 2px;
+  background: var(--bg-2);
+  cursor: pointer;
+  transition: border-color 0.15s, background 0.15s;
+}
+.bx-option:hover { border-color: var(--accent); }
+.bx-option input[type="radio"] {
+  margin: 2px 0 0 0;
+  flex-shrink: 0;
+  accent-color: var(--accent);
+  width: 16px;
+  height: 16px;
+  cursor: pointer;
+}
+/* highlight the currently-selected option */
+.bx-option:has(input:checked) {
+  border-color: var(--accent);
+  background: rgba(255, 159, 64, 0.07);
+}
+
+.bx-body { display: flex; flex-direction: column; gap: 2px; }
+.bx-title { font-size: 14px; font-weight: 700; }
+.bx-desc { font-size: 12.5px; line-height: 1.4; color: var(--text-dim); }
+.bx-count {
+  margin-top: 4px;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--accent-2);
+}
+
+/* history option greyed out when the bot has no saved chats */
+.bx-option.disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+.bx-option.disabled:hover { border-color: var(--border); }
+.bx-option.disabled input[type="radio"] { cursor: not-allowed; }
+.bx-option.disabled .bx-count { color: var(--text-dim); }

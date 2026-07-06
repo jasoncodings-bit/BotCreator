@@ -32,6 +32,7 @@ const K = {
 };
 
 const DEFAULT_CATEGORIES = [
+  { id: "curated-bots", name: "Curated Bots" },
   { id: "roleplay", name: "Roleplay & Characters" },
   { id: "assistant", name: "Assistants & Productivity" },
   { id: "learning", name: "Learning & Hobbies" },
@@ -45,8 +46,14 @@ const DEFAULT_SETTINGS = {
   theme: "light",
   userName: "",
   userPersona: "",
-  autoContinue: true,
-  dyslexiaFont: false
+  autoContinue: false,
+  dyslexiaFont: false,
+  textSize: "normal",     // "small" | "normal" | "large" | "xlarge"
+  compactMessages: false,
+  accentColor: "orange",  // "orange" | "blue" | "green" | "pink" | "purple"
+  bubbleStyle: "flat",    // "flat" | "rounded"
+  highContrast: true,
+  sidebarWidth: 300
 };
 
 const DEFAULT_BOTS = [
@@ -344,6 +351,37 @@ const DB = {
         if (template && b.color !== template.color) { b.color = template.color; dirty = true; }
       }
       this.settings.recoloredV1 = true;
+      this.saveSettings();
+    }
+    /* one-time: high contrast mode now defaults to on for everyone (new and
+       existing installs) — only runs once, so turning it back off in
+       Settings afterward sticks. */
+    if (!this.settings.highContrastDefaultedV1) {
+      this.settings.highContrast = true;
+      this.settings.highContrastDefaultedV1 = true;
+      this.saveSettings();
+    }
+    /* one-time: auto-continue was turned off by default — heavily-formatted
+       replies (lots of fenced blocks) that got continued mid-structure could
+       come back garbled (dropped backticks, repeated tails) since the model
+       sometimes loses track of exactly where it left off. Manual regenerate
+       still works fine if a reply genuinely gets cut off; this only disables
+       the automatic re-prompt. Only runs once, so re-enabling it in Settings
+       afterward sticks. */
+    if (!this.settings.autoContinueDisabledV1) {
+      this.settings.autoContinue = false;
+      this.settings.autoContinueDisabledV1 = true;
+      this.saveSettings();
+    }
+    /* one-time: the "Curated Bots" category was added after launch —
+       existing installs already have a categories array without it.
+       Placed at the very front (above Roleplay & Characters). */
+    if (!this.settings.seededCuratedBotsCategory) {
+      if (!this.categories.some(c => c.id === "curated-bots")) {
+        this.categories.unshift({ id: "curated-bots", name: "Curated Bots" });
+        this.saveCategories();
+      }
+      this.settings.seededCuratedBotsCategory = true;
       this.saveSettings();
     }
     if (dirty) this.saveBots();

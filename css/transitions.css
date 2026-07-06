@@ -1,0 +1,33 @@
+/* ============================================================
+   Smooth fades: home <-> chat view switches, and modal open/close
+   (bot editor, settings, category manager).
+   ============================================================ */
+
+/* ---------- view switch (home <-> chat) ---------- */
+.view-fade-in { animation: view-fade-in 0.2s ease; }
+
+@keyframes view-fade-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+/* ---------- modal overlays ---------- */
+/* modals.css keeps display:flex always and gates visibility with
+   visibility:hidden/visible (see .modal-overlay / .modal-overlay.open there).
+   Here we just add the opacity fade on top, with visibility's change
+   delayed on close so it doesn't cut the fade-out short. */
+.modal-overlay {
+  opacity: 0;
+  transition: opacity 0.18s ease, visibility 0.18s ease;
+}
+.modal-overlay.open {
+  opacity: 1;
+}
+
+.modal {
+  transform: translateY(8px) scale(0.98);
+  transition: transform 0.18s ease;
+}
+.modal-overlay.open .modal {
+  transform: translateY(0) scale(1);
+}

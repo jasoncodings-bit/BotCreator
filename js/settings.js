@@ -15,6 +15,11 @@ function openSettings() {
   $("set-autocontinue").checked = !!DB.settings.autoContinue;
   $("set-darkmode").checked = DB.settings.theme === "dark";
   $("set-dyslexiafont").checked = !!DB.settings.dyslexiaFont;
+  $("set-textsize").value = DB.settings.textSize || "normal";
+  $("set-compactmsgs").checked = !!DB.settings.compactMessages;
+  $("set-accentcolor").value = DB.settings.accentColor || "orange";
+  $("set-bubblestyle").value = DB.settings.bubbleStyle || "flat";
+  $("set-highcontrast").checked = !!DB.settings.highContrast;
   $("settings-test-result").textContent = "";
   $("settings-test-result").className = "";
 
@@ -76,10 +81,10 @@ function wirePersonaUI() {
     $("persona-name").focus();
     $("persona-name").select();
   };
-  $("persona-del-btn").onclick = () => {
+  $("persona-del-btn").onclick = async () => {
     const p = workPersona(workSelected);
     if (!p) return;
-    if (!confirm('Delete persona "' + p.name + '"?')) return;
+    if (!await appConfirm("This cannot be undone.", { title: 'Delete persona "' + p.name + '"?' })) return;
     workPersonas = workPersonas.filter(x => x.id !== p.id);
     workSelected = workPersonas.length ? workPersonas[0].id : "";
     renderPersonaUI();
@@ -127,11 +132,17 @@ function saveSettingsFromModal() {
   DB.settings.autoContinue = $("set-autocontinue").checked;
   DB.settings.theme = $("set-darkmode").checked ? "dark" : "light";
   DB.settings.dyslexiaFont = $("set-dyslexiafont").checked;
+  DB.settings.textSize = $("set-textsize").value;
+  DB.settings.compactMessages = $("set-compactmsgs").checked;
+  DB.settings.accentColor = $("set-accentcolor").value;
+  DB.settings.bubbleStyle = $("set-bubblestyle").value;
+  DB.settings.highContrast = $("set-highcontrast").checked;
   DB.settings.personas = workPersonas;
   DB.settings.activePersona = $("persona-select").value;
   DB.saveSettings();
   applyTheme();
   applyDyslexiaFont();
+  applyAppearance();
   closeSettings();
   toast("Settings saved");
   checkConnection();
@@ -162,26 +173,25 @@ function exportBackup() {
 function importFile(file) {
   if (!file) return;
   const reader = new FileReader();
-  reader.onload = () => {
+  reader.onload = async () => {
     let data;
     try { data = JSON.parse(reader.result); }
     catch { toast("That file isn't valid JSON"); return; }
 
-    /* single shared bot */
+    /* single shared bot (optionally carrying its chat history) */
     if (data && data.type === "botforge-bot" && data.bot && data.bot.name) {
-      const bot = data.bot;
-      bot.id = uid("bot");
-      bot.createdAt = Date.now();
-      DB.bots.push(bot);
-      DB.saveBots();
-      toast('Imported bot "' + bot.name + '"');
+      const { bot, importedChats } = importBotBundle(data);
+      toast(importedChats
+        ? 'Imported "' + bot.name + '" with ' + importedChats +
+          (importedChats === 1 ? " chat" : " chats")
+        : 'Imported bot "' + bot.name + '"');
       refreshAll();
       return;
     }
 
     /* full backup */
     if (data && Array.isArray(data.bots)) {
-      if (!confirm("Restore this backup? It will REPLACE all current bots, chats and settings.")) return;
+      if (!await appConfirm("It will REPLACE all current bots, chats and settings.", { title: "Restore this backup?" })) return;
       for (const s of DB.sessions) Store.del(K.msgs(s.id));
       Store.set(K.settings, Object.assign({}, DEFAULT_SETTINGS, data.settings || {}));
       Store.set(K.bots, data.bots);
@@ -198,9 +208,9 @@ function importFile(file) {
   reader.readAsText(file);
 }
 
-function resetEverything() {
-  if (!confirm("Reset EVERYTHING? All bots, chats and settings will be deleted.")) return;
-  if (!confirm("Really sure? There is no undo. (Tip: export a backup first!)")) return;
+async function resetEverything() {
+  if (!await appConfirm("All bots, chats and settings will be deleted.", { title: "Reset EVERYTHING?" })) return;
+  if (!await appConfirm("There is no undo. (Tip: export a backup first!)", { title: "Really sure?" })) return;
   const mine = [];
   for (let i = 0; i < localStorage.length; i++) {
     const k = localStorage.key(i);

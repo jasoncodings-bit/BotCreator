@@ -1,0 +1,68 @@
+/* ============================================================
+   Appearance & accessibility settings (js/appearance.js):
+   text size, compact message spacing, accent color,
+   message bubble style, high contrast.
+   ============================================================ */
+
+/* ---------- text size ---------- */
+:root[data-textsize="small"] .msg-bubble { font-size: 13px; }
+:root[data-textsize="normal"] .msg-bubble { font-size: 14.5px; }
+:root[data-textsize="large"] .msg-bubble { font-size: 16.5px; }
+:root[data-textsize="xlarge"] .msg-bubble { font-size: 19px; }
+
+/* ---------- compact message spacing ---------- */
+body.compact-messages .msg { padding: 2px 0; gap: 8px; }
+body.compact-messages .msg-bubble { padding: 7px 12px; }
+body.compact-messages .msg-col { gap: 2px; }
+
+/* ---------- accent color ---------- */
+:root[data-accent="blue"] {
+  --accent: #2aa8f0;
+  --accent-hover: #5cc2ff;
+  --accent-soft: rgba(42, 168, 240, 0.16);
+  --grad: #2aa8f0;
+  --user-bubble: #1f7fb8;
+}
+:root[data-accent="green"] {
+  --accent: #2ecc71;
+  --accent-hover: #54d98c;
+  --accent-soft: rgba(46, 204, 113, 0.16);
+  --grad: #2ecc71;
+  --user-bubble: #229954;
+}
+:root[data-accent="pink"] {
+  --accent: #ff5c9e;
+  --accent-hover: #ff85b6;
+  --accent-soft: rgba(255, 92, 158, 0.16);
+  --grad: #ff5c9e;
+  --user-bubble: #d63e7c;
+}
+:root[data-accent="purple"] {
+  --accent: #a06cf0;
+  --accent-hover: #b98ff7;
+  --accent-soft: rgba(160, 108, 240, 0.16);
+  --grad: #a06cf0;
+  --user-bubble: #7c4dc4;
+}
+
+/* ---------- message bubble style ---------- */
+body.bubble-rounded .msg-bubble { border-radius: 16px; }
+body.bubble-rounded .msg.user .msg-bubble { border-bottom-right-radius: 4px; }
+body.bubble-rounded .msg.bot .msg-bubble { border-bottom-left-radius: 4px; }
+
+/* ---------- high contrast ---------- */
+body.high-contrast {
+  --border: currentColor;
+}
+body.high-contrast .msg.bot .msg-bubble {
+  border-width: 2px;
+}
+body.high-contrast .msg-bubble,
+body.high-contrast .btn,
+body.high-contrast .field input,
+body.high-contrast .field select,
+body.high-contrast .field textarea {
+  border-width: 2px;
+}
+:root[data-theme="dark"] body.high-contrast { --text-dim: #d4d7e2; }
+:root[data-theme="light"] body.high-contrast { --text-dim: #4a4136; }

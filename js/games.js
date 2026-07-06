@@ -83,7 +83,7 @@ function stampGameFence(gameName, gs) {
 function restartGame() {
   const bot = DB.bot(State.botId);
   const s = DB.session(State.sessionId);
-  if (!bot || !s || !isGameBot(bot) || State.generating) return;
+  if (!bot || !s || !isGameBot(bot) || Generations.has(State.sessionId)) return;
   s.gameState = { game: bot.game, state: GAMES[bot.game].init(), turn: "user", over: false };
   DB.saveSessions();
   State.msgs.push({ id: uid("m"), role: "assistant", content: stampGameFence(bot.game, s.gameState), ts: Date.now() });
@@ -104,7 +104,7 @@ function syncGameState() {
 async function handleGameCellClick(cellEl) {
   const bot = DB.bot(State.botId);
   const s = DB.session(State.sessionId);
-  if (!bot || !s || !isGameBot(bot) || State.generating) return;
+  if (!bot || !s || !isGameBot(bot) || Generations.has(State.sessionId)) return;
   const gs = ensureGameState(s, bot);
   if (gs.over || gs.turn !== "user") return;
   const g = GAMES[bot.game];
@@ -119,14 +119,14 @@ async function handleGameCellClick(cellEl) {
   const result = g.checkEnd(gs.state);
   if (result) { gs.over = true; gs.result = result; }
   DB.saveSessions();
-  await advanceGame(bot, s, gs, g);
+  await advanceGame(bot, s, gs, g, State.msgs);
 }
 
 /* for games where "the move" is typed text (Hangman letters, Word Guess
    guesses) rather than a click — called from sendMessage() in js/chats.js
    before the text is treated as a normal chat message */
 async function handleGameTextInput(text) {
-  if (State.generating) return false;
+  if (Generations.has(State.sessionId)) return false;
   const bot = DB.bot(State.botId);
   const s = DB.session(State.sessionId);
   if (!bot || !s || !isGameBot(bot)) return false;
@@ -145,7 +145,7 @@ async function handleGameTextInput(text) {
   if (result) { gs.over = true; gs.result = result; }
   DB.saveSessions();
   persistMsgs();
-  await advanceGame(bot, s, gs, g);
+  await advanceGame(bot, s, gs, g, State.msgs);
   return true;
 }
 
@@ -196,10 +196,11 @@ async function botReaction(bot, situationText) {
   }
 }
 
-async function advanceGame(bot, session, gs, g) {
-  renderMessages();
-  State.generating = true;
-  setSendButton(true);
+async function advanceGame(bot, session, gs, g, msgs) {
+  if (isActiveSession(session.id)) renderMessages();
+  const sessionId = session.id;
+  Generations.set(sessionId, { abort: { abort() {} }, msgs });
+  if (isActiveSession(sessionId)) setSendButton(true);
   try {
     if (!gs.over && !g.soloTurn) {
       const move = await pickValidatedMove(bot, g, gs.state);
@@ -215,11 +216,12 @@ async function advanceGame(bot, session, gs, g) {
     const situation = g.situationSummary(gs);
     const reaction = await botReaction(bot, situation);
     const boardMsg = stampGameFence(bot.game, gs) + (reaction ? "\n\n" + reaction : "");
-    State.msgs.push({ id: uid("m"), role: "assistant", content: boardMsg, ts: Date.now() });
-    persistMsgs();
-    renderMessages();
+    msgs.push({ id: uid("m"), role: "assistant", content: boardMsg, ts: Date.now() });
+    Generations.delete(sessionId);
+    persistMsgsFor(sessionId, msgs);
+    if (isActiveSession(sessionId)) renderMessages();
   } finally {
-    State.generating = false;
-    setSendButton(false);
+    Generations.delete(sessionId);
+    if (isActiveSession(sessionId)) setSendButton(false);
   }
 }

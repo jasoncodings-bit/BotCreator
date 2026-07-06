@@ -1,0 +1,18 @@
+/* ============================================================
+   Themed confirm dialog (js/confirm.js) — reuses .modal-overlay/
+   .modal/.modal-actions/.btn styling from modals.css so it fades
+   in exactly like every other modal (css/transitions.css).
+   ============================================================ */
+
+.modal.modal-narrow { width: min(400px, calc(100vw - 32px)); }
+
+#confirm-title {
+  font-size: 17px;
+  font-weight: 800;
+  margin-bottom: 10px;
+}
+#confirm-message {
+  color: var(--text-dim);
+  line-height: 1.5;
+  margin-bottom: 20px;
+}

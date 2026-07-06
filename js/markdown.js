@@ -55,6 +55,7 @@ const NAME_TO_EMOJI = {
   soccer: "⚽", basketball: "🏀", tennis: "🎾", golf: "⛳", swim: "🏊",
   volleyball: "🏐", football: "🏈", baseball: "⚾",
   sad: "😢", angry: "😠", happy: "😊", laugh: "😂", think: "🤔", thinking: "🤔",
+  thinking_face: "🤔", shrug: "🤷",
   wave: "👋", clap: "👏", question: "❓", exclamation: "❗", idea: "💡",
   bullseye: "🎯", fire: "🔥", water: "💧", ocean: "🌊", rain: "🌧️",
   snow: "🌨️", tree: "🌳", palm: "🌴", flower: "🌸", ball: "🏀",
@@ -507,7 +508,7 @@ function mdInline(s) {
   s = s.replace(/\|\|([^|\n]+)\|\|/g, '<span class="spoiler" title="Click to reveal">$1</span>');
   s = s.replace(/\[\[([^\[\]\n]{1,24})\]\]/g, '<kbd>$1</kbd>');
   s = s.replace(/==([^=\n]+)==/g, '<mark>$1</mark>');
-  s = s.replace(/:([a-z][a-z0-9-]{0,20}):/g, (m, name) => {
+  s = s.replace(/:([a-z][a-z0-9_-]{0,20}):/g, (m, name) => {
     if (hasIcon(name)) return icon(name, "inline-ic");
     if (NAME_TO_EMOJI[name]) return NAME_TO_EMOJI[name];
     return m;

@@ -3,7 +3,8 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Botivo — Ultimate Local AI Chat</title>
+<title>Botivo</title>
+<link rel="icon" type="image/png" href="js/vendor/Images/favicon.png">
 <link rel="stylesheet" href="css/loading.css">
 <link rel="stylesheet" href="css/fonts.css">
 <link rel="stylesheet" href="css/base.css">
@@ -25,7 +26,13 @@
 <link rel="stylesheet" href="css/animations.css">
 <link rel="stylesheet" href="css/accessibility.css">
 <link rel="stylesheet" href="css/modals.css">
+<link rel="stylesheet" href="css/botexport.css">
 <link rel="stylesheet" href="css/commands.css">
+<link rel="stylesheet" href="css/collapse.css">
+<link rel="stylesheet" href="css/transitions.css">
+<link rel="stylesheet" href="css/confirm.css">
+<link rel="stylesheet" href="css/appearance.css">
+<link rel="stylesheet" href="css/sidebarresize.css">
 <link rel="stylesheet" href="css/mobile.css">
 </head>
 <body>
@@ -63,7 +70,7 @@
   </div>
 
   <div id="sidebar-search-wrap">
-    <input type="text" id="sidebar-search" placeholder="Search chats…  (Ctrl+K)">
+    <input type="text" id="sidebar-search" placeholder="Search chats…">
   </div>
 
   <div id="session-list"></div>
@@ -71,6 +78,7 @@
   <div id="sidebar-footer">
     <button id="settings-btn" class="foot-btn wide" type="button"></button>
   </div>
+  <div id="sidebar-resize-handle" title="Drag to resize"></div>
 </aside>
 
 <!-- ==================== MAIN ==================== -->
@@ -288,76 +296,172 @@
   </div>
 </div>
 
+<!-- ==================== BOT EXPORT MODAL ==================== -->
+<div class="modal-overlay" id="bot-export-modal">
+  <div class="modal modal-narrow">
+    <h2>Export <span id="bot-export-name" class="bx-botname"></span></h2>
+    <p class="bx-sub">Choose what to include in the exported file.</p>
+    <label class="bx-option" id="bot-export-persona-option">
+      <input type="radio" name="bot-export-mode" id="bot-export-persona-only" checked>
+      <span class="bx-body">
+        <span class="bx-title">Persona only</span>
+        <span class="bx-desc">The bot itself — name, prompt, personality, settings. No chats.</span>
+      </span>
+    </label>
+    <label class="bx-option" id="bot-export-history-option">
+      <input type="radio" name="bot-export-mode" id="bot-export-with-history">
+      <span class="bx-body">
+        <span class="bx-title">Persona + chat history</span>
+        <span class="bx-desc">Everything above, plus this bot's saved conversations.</span>
+        <span class="bx-count" id="bot-export-history-info"></span>
+      </span>
+    </label>
+    <div class="modal-actions">
+      <button class="btn" id="bot-export-cancel-btn" type="button">Cancel</button>
+      <span class="spacer"></span>
+      <button class="btn primary" id="bot-export-confirm-btn" type="button">Export</button>
+    </div>
+  </div>
+</div>
+
 <!-- ==================== SETTINGS MODAL ==================== -->
 <div class="modal-overlay" id="settings-modal">
   <div class="modal">
     <h2>Settings</h2>
 
-    <div class="settings-section">Server</div>
-    <div class="field">
-      <label>Server URL</label>
-      <input type="text" id="set-url" placeholder="http://127.0.0.1:8081">
-      <div class="hint">Works with llama.cpp, LM Studio, Ollama, KoboldCpp, or anything else that speaks the OpenAI API.</div>
-    </div>
-    <div class="field">
-      <label>Model</label>
-      <div id="model-row">
-        <select id="set-model"><option value="">(auto — server default)</option></select>
-        <button class="btn sm" id="refresh-models-btn" title="Fetch model list from server" type="button"></button>
-      </div>
-      <div id="settings-test-result"></div>
-    </div>
-    <div class="field">
-      <label>Max response length: <span class="range-val" id="maxtok-val">1024</span> tokens</label>
-      <input type="range" id="set-maxtok" min="128" max="15000" step="128" value="1024">
-      <div class="hint">Raise this if bots keep getting cut off mid-answer. Uses more memory and takes longer per reply.</div>
-    </div>
-    <div class="field checkbox-field">
-      <label><input type="checkbox" id="set-autocontinue"> Auto-continue cut-off responses</label>
-      <div class="hint">If a reply hits the token limit mid code block, ask the model to keep going instead of leaving it broken (tries up to 3 times).</div>
-    </div>
-
-    <div class="settings-section">Appearance</div>
-    <div class="field checkbox-field">
-      <label><input type="checkbox" id="set-darkmode"> Dark mode</label>
-      <div class="hint">Switches the app to a dark palette.</div>
-    </div>
-    <div class="field checkbox-field">
-      <label><input type="checkbox" id="set-dyslexiafont"> Dyslexia-friendly font</label>
-      <div class="hint">Switches chat text to OpenDyslexic.</div>
-    </div>
-
-    <div class="settings-section">Personas <span class="label-hint">(who the bots think you are — switch anytime)</span></div>
-    <div class="field">
-      <label>Active persona</label>
-      <div id="persona-row">
-        <select id="persona-select"></select>
-        <button class="btn sm" id="persona-add-btn" title="New persona" type="button"></button>
-        <button class="btn sm danger" id="persona-del-btn" title="Delete persona" type="button"></button>
-      </div>
-    </div>
-    <div id="persona-fields">
-      <div class="field">
-        <label>Persona name</label>
-        <input type="text" id="persona-name" placeholder="e.g. Billy" maxlength="40">
-      </div>
-      <div class="field">
-        <label>About this persona</label>
-        <textarea id="persona-desc" rows="2" placeholder="e.g. A 15-year-old gamer who loves Minecraft and coding"></textarea>
+    <div class="collapse-group collapsed">
+      <button class="settings-section collapse-head" type="button" aria-expanded="false">Server</button>
+      <div class="collapse-body">
+        <div class="field">
+          <label>Server URL</label>
+          <input type="text" id="set-url" placeholder="http://127.0.0.1:8081">
+          <div class="hint">Works with llama.cpp, LM Studio, Ollama, KoboldCpp, or anything else that speaks the OpenAI API.</div>
+        </div>
+        <div class="field">
+          <label>Model</label>
+          <div id="model-row">
+            <select id="set-model"><option value="">(auto — server default)</option></select>
+            <button class="btn sm" id="refresh-models-btn" title="Fetch model list from server" type="button"></button>
+          </div>
+          <div id="settings-test-result"></div>
+        </div>
+        <div class="field">
+          <label>Max response length: <span class="range-val" id="maxtok-val">1024</span> tokens</label>
+          <input type="range" id="set-maxtok" min="128" max="15000" step="128" value="1024">
+          <div class="hint">Raise this if bots keep getting cut off mid-answer. Uses more memory and takes longer per reply.</div>
+        </div>
+        <div class="field checkbox-field">
+          <label><input type="checkbox" id="set-autocontinue"> Auto-continue cut-off responses</label>
+          <div class="hint">If a reply hits the token limit mid code block, ask the model to keep going instead of leaving it broken (tries up to 3 times).</div>
+        </div>
       </div>
     </div>
 
-    <div class="settings-section">Data</div>
-    <div class="data-btns">
-      <button class="btn" id="export-btn" type="button"></button>
-      <button class="btn" id="import-btn" type="button"></button>
-      <button class="btn danger" id="reset-btn" type="button"></button>
+    <div class="collapse-group collapsed">
+      <button class="settings-section collapse-head" type="button" aria-expanded="false">Appearance</button>
+      <div class="collapse-body">
+        <div class="field checkbox-field">
+          <label><input type="checkbox" id="set-darkmode"> Dark mode</label>
+          <div class="hint">Switches the app to a dark palette.</div>
+        </div>
+        <div class="field checkbox-field">
+          <label><input type="checkbox" id="set-dyslexiafont"> Dyslexia-friendly font</label>
+          <div class="hint">Switches chat text to OpenDyslexic.</div>
+        </div>
+        <div class="field">
+          <label>Text size</label>
+          <select id="set-textsize">
+            <option value="small">Small</option>
+            <option value="normal">Normal</option>
+            <option value="large">Large</option>
+            <option value="xlarge">Extra large</option>
+          </select>
+        </div>
+        <div class="field checkbox-field">
+          <label><input type="checkbox" id="set-compactmsgs"> Compact message spacing</label>
+          <div class="hint">Tighter spacing between chat bubbles so more fits on screen.</div>
+        </div>
+        <div class="field">
+          <label>Accent color</label>
+          <select id="set-accentcolor">
+            <option value="orange">Orange</option>
+            <option value="blue">Blue</option>
+            <option value="green">Green</option>
+            <option value="pink">Pink</option>
+            <option value="purple">Purple</option>
+          </select>
+        </div>
+        <div class="field">
+          <label>Message bubble style</label>
+          <select id="set-bubblestyle">
+            <option value="flat">Flat</option>
+            <option value="rounded">Rounded</option>
+          </select>
+        </div>
+      </div>
+    </div>
+
+    <div class="collapse-group collapsed">
+      <button class="settings-section collapse-head" type="button" aria-expanded="false">Accessibility</button>
+      <div class="collapse-body">
+        <div class="field checkbox-field">
+          <label><input type="checkbox" id="set-highcontrast"> High contrast mode</label>
+          <div class="hint">Boosts text and border contrast beyond the normal theme for low-vision users.</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="collapse-group collapsed">
+      <button class="settings-section collapse-head" type="button" aria-expanded="false">Personas</button>
+      <div class="collapse-body">
+        <div class="field">
+          <label>Active persona</label>
+          <div id="persona-row">
+            <select id="persona-select"></select>
+            <button class="btn sm" id="persona-add-btn" title="New persona" type="button"></button>
+            <button class="btn sm danger" id="persona-del-btn" title="Delete persona" type="button"></button>
+          </div>
+        </div>
+        <div id="persona-fields">
+          <div class="field">
+            <label>Persona name</label>
+            <input type="text" id="persona-name" placeholder="e.g. Billy" maxlength="40">
+          </div>
+          <div class="field">
+            <label>About this persona</label>
+            <textarea id="persona-desc" rows="2" placeholder="e.g. A 70-year-old gamer who loves rocks and cats."></textarea>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="collapse-group collapsed">
+      <button class="settings-section collapse-head" type="button" aria-expanded="false">Data</button>
+      <div class="collapse-body">
+        <div class="data-btns">
+          <button class="btn" id="export-btn" type="button"></button>
+          <button class="btn" id="import-btn" type="button"></button>
+          <button class="btn danger" id="reset-btn" type="button"></button>
+        </div>
+      </div>
     </div>
 
     <div class="modal-actions">
       <span class="spacer"></span>
       <button class="btn" id="settings-cancel-btn" type="button">Cancel</button>
       <button class="btn primary" id="settings-save-btn" type="button">Save</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="confirm-modal">
+  <div class="modal modal-narrow">
+    <div id="confirm-title"></div>
+    <div id="confirm-message"></div>
+    <div class="modal-actions">
+      <span class="spacer"></span>
+      <button class="btn" id="confirm-cancel-btn" type="button">Cancel</button>
+      <button class="btn danger" id="confirm-ok-btn" type="button">Delete</button>
     </div>
   </div>
 </div>
@@ -385,9 +489,12 @@
 <script src="js/blocks2.js"></script>
 <script src="js/markdown2.js"></script>
 <script src="js/ui.js"></script>
+<script src="js/confirm.js"></script>
 <script src="js/api.js"></script>
 <script src="js/home.js"></script>
 <script src="js/bots.js"></script>
+<script src="js/botexport.js"></script>
+<script src="js/curatedbots.js"></script>
 <script src="js/games.js"></script>
 <script src="js/games/tictactoe.js"></script>
 <script src="js/games/hangman.js"></script>
@@ -396,6 +503,10 @@
 <script src="js/chats.js"></script>
 <script src="js/commands.js"></script>
 <script src="js/settings.js"></script>
+<script src="js/appearance.js"></script>
+<script src="js/sidebarresize.js"></script>
+<script src="js/collapse.js"></script>
+<script src="js/transitions.js"></script>
 <script src="js/loading.js"></script>
 <script src="js/app.js"></script>
 </body>

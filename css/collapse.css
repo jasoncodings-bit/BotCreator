@@ -1,0 +1,57 @@
+/* ============================================================
+   Collapsible settings sections (Appearance / Personas / Data)
+   Header toggles the body open/closed; body animates height.
+   ============================================================ */
+
+.collapse-group {
+  border-top: 1px solid var(--border, rgba(128, 128, 128, 0.2));
+  margin: 0;
+}
+.collapse-group:first-of-type { border-top: none; }
+
+/* the header reuses .settings-section styling but is a real button */
+.collapse-head {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  margin: 0;
+  padding: 14px 0;
+  background: none;
+  border: none;
+  cursor: pointer;
+  text-align: left;
+  font-family: inherit;
+}
+.collapse-head:hover { filter: brightness(1.15); }
+
+/* chevron indicator */
+.collapse-head::after {
+  content: "";
+  flex: none;
+  width: 8px;
+  height: 8px;
+  margin-left: auto;
+  border-right: 2px solid currentColor;
+  border-bottom: 2px solid currentColor;
+  transform: rotate(45deg);        /* points down = expanded */
+  transition: transform 0.2s ease;
+}
+.collapse-group.collapsed .collapse-head::after {
+  transform: rotate(-45deg);       /* points right = collapsed */
+}
+
+/* animated body */
+.collapse-body {
+  overflow: hidden;
+  max-height: 1500px;
+  opacity: 1;
+  transition: max-height 0.25s ease, opacity 0.2s ease, padding 0.25s ease;
+  padding-bottom: 14px;
+}
+
+.collapse-group.collapsed .collapse-body {
+  max-height: 0;
+  opacity: 0;
+  padding-bottom: 0;
+}

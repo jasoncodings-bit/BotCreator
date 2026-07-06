@@ -1,0 +1,68 @@
+{
+  "name": "botivo-desktop",
+  "productName": "Botivo",
+  "version": "1.0.0",
+  "description": "Desktop shell for the Botivo local AI chat web app",
+  "author": "jasoncodings",
+  "license": "MIT",
+  "main": "main.js",
+  "scripts": {
+    "start": "electron .",
+    "dist": "electron-builder --win --publish never",
+    "dist:portable": "electron-builder --win portable --publish never"
+  },
+  "devDependencies": {
+    "@electron/packager": "^20.0.2",
+    "electron": "^33.0.0",
+    "electron-builder": "^25.0.0"
+  },
+  "build": {
+    "appId": "com.jasoncodings.botivo",
+    "productName": "Botivo",
+    "directories": {
+      "output": "release"
+    },
+    "files": [
+      "main.js",
+      "icon.png"
+    ],
+    "extraResources": [
+      {
+        "from": "..",
+        "to": "app",
+        "filter": [
+          "index.html",
+          "css/**/*",
+          "js/**/*",
+          "!desktop/**/*",
+          "!**/node_modules/**",
+          "!**/.git/**"
+        ]
+      }
+    ],
+    "win": {
+      "target": [
+        {
+          "target": "nsis",
+          "arch": [
+            "x64"
+          ]
+        },
+        {
+          "target": "portable",
+          "arch": [
+            "x64"
+          ]
+        }
+      ],
+      "icon": "icon.png"
+    },
+    "nsis": {
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true,
+      "perMachine": false,
+      "createDesktopShortcut": true,
+      "shortcutName": "Botivo"
+    }
+  }
+}
