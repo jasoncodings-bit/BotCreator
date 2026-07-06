@@ -1,0 +1,28 @@
+/* ============================================================
+   Bot Master — accessibility: dyslexia-friendly font toggle
+   (OpenDyslexic, vendored locally, see js/vendor/fonts/)
+   ============================================================ */
+
+@font-face {
+  font-family: "OpenDyslexic";
+  src: url("../js/vendor/fonts/OpenDyslexic-Regular.woff") format("woff");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: "OpenDyslexic";
+  src: url("../js/vendor/fonts/OpenDyslexic-Bold.woff") format("woff");
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+
+body.dyslexia-font,
+body.dyslexia-font #msg-input,
+body.dyslexia-font .msg-bubble,
+body.dyslexia-font .proseblock-body {
+  font-family: "OpenDyslexic", "Segoe UI Variable", "Segoe UI", system-ui, sans-serif;
+  letter-spacing: 0.01em;
+  line-height: 1.7;
+}

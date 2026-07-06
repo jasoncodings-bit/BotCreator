@@ -1,0 +1,41 @@
+/* ============================================================
+   Bot Master — prose blocks (```story``` / ```poem```): a
+   codeblock-style card for copyable long-form writing
+   ============================================================ */
+
+.proseblock {
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 2px;
+  margin: 8px 0;
+  overflow: hidden;
+}
+.proseblock-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 7px;
+  padding: 5px 6px 5px 12px;
+  background: var(--bg-2);
+  border-bottom: 1px solid var(--border);
+  font-size: 11.5px;
+  font-weight: 700;
+  color: var(--text-dim);
+}
+.proseblock-head span {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+.proseblock-head .ic { width: 13px; height: 13px; }
+.proseblock-body {
+  padding: 14px 18px;
+  white-space: pre-wrap;
+  font-size: 14px;
+  line-height: 1.7;
+  font-family: Georgia, "Segoe UI", serif;
+}
+.proseblock-poem .proseblock-body {
+  text-align: center;
+  font-style: italic;
+}

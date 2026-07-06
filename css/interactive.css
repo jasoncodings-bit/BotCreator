@@ -1,0 +1,76 @@
+/* ============================================================
+   Bot Master — interactive message features: collapsible details,
+   poll/choice buttons, universal hover-copy
+   ============================================================ */
+
+/* ==================== COLLAPSIBLE DETAILS ==================== */
+.details-block {
+  margin: 8px 0;
+  border: 1px solid var(--border);
+  border-radius: 2px;
+  overflow: hidden;
+  background: var(--bg-2);
+}
+.details-summary {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 9px 12px;
+  background: none;
+  border: none;
+  color: var(--text);
+  font-size: 13.5px;
+  font-weight: 700;
+  cursor: pointer;
+  text-align: left;
+  transition: background 0.12s;
+}
+.details-summary:hover { background: var(--bg-3); }
+.details-summary .ic {
+  width: 14px; height: 14px;
+  transition: transform 0.15s;
+  flex-shrink: 0;
+}
+.details-summary[aria-expanded="true"] .ic { transform: rotate(180deg); }
+.details-body {
+  padding: 2px 12px 12px;
+  border-top: 1px solid var(--border);
+  padding-top: 10px;
+  font-size: 13.5px;
+}
+.details-body > *:first-child { margin-top: 0; }
+
+/* ==================== POLL / CHOICE BUTTONS ==================== */
+.pollblock {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin: 8px 0;
+}
+.choice-btn {
+  text-align: left;
+  padding: 9px 13px;
+  background: var(--bg-3);
+  border: 1px solid var(--border);
+  border-radius: 2px;
+  color: var(--text);
+  font-size: 13.5px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+.choice-btn:hover {
+  background: var(--accent-soft);
+  border-color: var(--accent);
+  color: var(--accent);
+}
+.choice-btn:disabled {
+  cursor: default;
+  opacity: 0.55;
+}
+.choice-btn.picked {
+  background: var(--accent-soft);
+  border-color: var(--accent);
+  color: var(--accent);
+}

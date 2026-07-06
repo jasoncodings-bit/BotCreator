@@ -1,0 +1,66 @@
+/* ============================================================
+   Bot Master — timeline formatting block (```timeline```)
+   ============================================================ */
+
+.timeline {
+  margin: 8px 0;
+  padding: 4px 2px;
+  display: flex;
+  flex-direction: column;
+}
+.tl-step {
+  display: flex;
+  gap: 16px;
+  position: relative;
+  padding-bottom: 22px;
+}
+.tl-step:last-child { padding-bottom: 0; }
+.tl-marker {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  background: var(--accent);
+  box-shadow: 0 0 0 4px var(--accent-soft);
+  flex-shrink: 0;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1;
+}
+.tl-num {
+  font-size: 13px;
+  font-weight: 800;
+  color: #fff;
+  line-height: 1;
+}
+/* the connecting line spans the FULL height of the step (marker height
+   down to the next marker), not just the marker itself, so it stays one
+   unbroken line regardless of how much text is in .tl-content */
+.tl-step:not(:last-child)::after {
+  content: "";
+  position: absolute;
+  top: 30px;
+  left: 15px;
+  transform: translateX(-50%);
+  width: 4px;
+  bottom: -22px;
+  background: linear-gradient(var(--accent), var(--border));
+  border-radius: 2px;
+}
+.tl-content {
+  flex: 1;
+  min-width: 0;
+  padding-top: 5px;
+}
+.tl-label {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--accent);
+  margin-bottom: 3px;
+}
+.tl-body {
+  font-size: 13.5px;
+  color: var(--text);
+  line-height: 1.45;
+}

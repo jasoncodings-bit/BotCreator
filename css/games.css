@@ -1,0 +1,155 @@
+/* ============================================================
+   Bot Master — Games category: ```game:<name>``` fenced block
+   (see js/games.js + js/games/*.js)
+   ============================================================ */
+
+.gameblock {
+  margin: 8px 0 4px;
+  padding: 14px;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 2px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+}
+
+.game-rematch-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 9px 16px;
+  background: var(--grad);
+  border: none;
+  border-radius: 2px;
+  color: #fff;
+  font-size: 13.5px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: filter 0.15s;
+}
+.game-rematch-btn:hover { filter: brightness(1.12); }
+.game-rematch-btn .ic { width: 15px; height: 15px; }
+
+/* ==================== TIC-TAC-TOE ==================== */
+.ttt-board {
+  display: grid;
+  grid-template-columns: repeat(3, 64px);
+  grid-template-rows: repeat(3, 64px);
+  gap: 6px;
+}
+.ttt-cell {
+  background: var(--bg-3);
+  border: 1px solid var(--border);
+  border-radius: 2px;
+  font-size: 28px;
+  font-weight: 800;
+  color: var(--text);
+  cursor: pointer;
+  transition: background 0.12s;
+}
+.ttt-cell:not(:disabled):hover { background: var(--bg-4); }
+.ttt-cell:disabled { cursor: default; }
+.ttt-cell.filled.x { color: var(--accent-2); }
+.ttt-cell.filled.o { color: var(--accent); }
+
+/* ==================== CONNECT FOUR ==================== */
+.c4-wrap { display: flex; flex-direction: column; gap: 6px; }
+.c4-cols {
+  display: grid;
+  grid-template-columns: repeat(7, 40px);
+  gap: 4px;
+}
+.c4-col {
+  height: 24px;
+  background: var(--bg-3);
+  border: 1px solid var(--border);
+  border-radius: 2px;
+  cursor: pointer;
+  color: var(--text-dim);
+  transition: background 0.12s;
+}
+.c4-col:not(:disabled):hover { background: var(--accent-soft); border-color: var(--accent); }
+.c4-col:disabled { cursor: default; opacity: 0.3; }
+.c4-grid {
+  display: grid;
+  gap: 4px;
+  background: var(--accent-2);
+  padding: 6px;
+  border-radius: 2px;
+}
+.c4-cell {
+  width: 40px;
+  height: 40px;
+  background: var(--bg);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.c4-disc {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: transparent;
+  transition: background 0.15s;
+}
+.c4-cell.filled.red .c4-disc { background: var(--red); }
+.c4-cell.filled.yellow .c4-disc { background: #ffb020; }
+
+/* ==================== HANGMAN ==================== */
+.hangman-wrap {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+}
+.hangman-gallows {
+  font-family: Consolas, monospace;
+  font-size: 14px;
+  line-height: 1.3;
+  color: var(--text-dim);
+  margin: 0;
+}
+.hangman-word {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+.hangman-letter {
+  width: 26px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-bottom: 2px solid var(--border);
+  font-size: 19px;
+  font-weight: 800;
+  color: var(--text);
+}
+.hangman-wrong { font-size: 12.5px; color: var(--red); }
+.hangman-hint { font-size: 12px; color: var(--text-dim); }
+
+/* ==================== WORD GUESS ==================== */
+.wg-wrap { display: flex; flex-direction: column; align-items: center; gap: 10px; }
+.wg-grid { display: flex; flex-direction: column; gap: 5px; }
+.wg-row { display: flex; gap: 5px; }
+.wg-cell {
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid var(--border);
+  border-radius: 2px;
+  font-size: 17px;
+  font-weight: 800;
+  color: #fff;
+  background: var(--bg-3);
+}
+.wg-cell.empty { background: var(--bg-3); color: transparent; }
+.wg-cell.green { background: var(--green); border-color: var(--green); }
+.wg-cell.yellow { background: #e0a721; border-color: #e0a721; }
+.wg-cell.gray { background: var(--bg-4); color: var(--text-dim); border-color: var(--border); }

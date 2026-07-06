@@ -1,0 +1,76 @@
+/* ============================================================
+   Bot Master — stats blocks (```stats``` / ```stats:bar```):
+   big number cards and HP/mana-style bars
+   ============================================================ */
+
+.statsblock {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin: 8px 0;
+}
+.stat-card {
+  flex: 1;
+  min-width: 84px;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 2px;
+  padding: 12px 14px;
+  text-align: center;
+}
+.stat-card-value {
+  font-size: 22px;
+  font-weight: 800;
+  color: var(--accent);
+  line-height: 1.2;
+}
+.stat-card-label {
+  font-size: 11.5px;
+  color: var(--text-dim);
+  margin-top: 3px;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+/* HP/mana-style bar variant */
+.statsblock-bar {
+  flex-direction: column;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 2px;
+  padding: 12px 14px;
+  gap: 8px;
+}
+.stat-bar-row {
+  display: grid;
+  grid-template-columns: minmax(60px, 28%) 1fr auto;
+  align-items: center;
+  gap: 10px;
+  font-size: 12.5px;
+}
+.stat-bar-label {
+  color: var(--text-dim);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.stat-bar-track {
+  height: 14px;
+  background: var(--bg-3);
+  border: 1px solid var(--border);
+  border-radius: 2px;
+  overflow: hidden;
+}
+.stat-bar-fill {
+  height: 100%;
+  background: var(--green);
+  min-width: 2px;
+  transition: width 0.3s;
+}
+.stat-bar-value {
+  font-family: Consolas, monospace;
+  font-size: 12px;
+  color: var(--text);
+  min-width: 3.5ch;
+  text-align: right;
+}

@@ -1,0 +1,74 @@
+/* ============================================================
+   Bot Master — slash commands: "/" autocomplete popover +
+   local system-note message bubble
+   ============================================================ */
+
+/* anchor point for the popover, which floats above the whole input row */
+#input-row { position: relative; }
+
+#command-popover {
+  position: absolute;
+  bottom: calc(100% + 8px);
+  left: 0;
+  right: 0;
+  max-height: 260px;
+  overflow-y: auto;
+  background: var(--bg-2);
+  border: 1px solid var(--border);
+  border-radius: 2px;
+  box-shadow: var(--shadow);
+  z-index: 50;
+  padding: 6px;
+  animation: fadeIn 0.12s ease;
+}
+
+.cmd-row {
+  width: 100%;
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+  padding: 8px 9px;
+  background: none;
+  border: 1px solid transparent;
+  border-radius: 2px;
+  color: var(--text);
+  text-align: left;
+  cursor: pointer;
+  transition: background 0.12s;
+  font-family: inherit;
+}
+.cmd-row:hover { background: var(--bg-3); }
+.cmd-name {
+  font-family: Consolas, monospace;
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--accent);
+  flex-shrink: 0;
+}
+.cmd-hint {
+  font-size: 12.5px;
+  color: var(--text-dim);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* ==================== LOCAL SYSTEM-NOTE MESSAGES ====================
+   feedback from slash commands (/help, /clear, /compact, etc.) — never
+   sent to the model, styled distinctly from real bot/user messages */
+.msg.local {
+  align-self: center;
+  max-width: min(680px, 96%);
+  width: 100%;
+}
+.msg.local .msg-bubble {
+  background: var(--bg-3);
+  border: 1px dashed var(--border);
+  color: var(--text-dim);
+  font-size: 13px;
+  text-align: left;
+}
+.msg.local.error .msg-bubble {
+  border-color: var(--red);
+  color: var(--red);
+}

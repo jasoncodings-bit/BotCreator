@@ -1,0 +1,123 @@
+/* ============================================================
+   Bot Master — mobile support: off-canvas sidebar, touch-reachable
+   controls, and narrow-viewport layout fixes. Media-query
+   overrides only — see base.css/chat.css/home.css/modals.css for
+   the base (desktop-first) rules this file adjusts.
+   ============================================================ */
+
+/* ==================== TOUCH: MAKE HOVER-ONLY CONTROLS REACHABLE ====================
+   Devices with no hover (touchscreens) can never trigger :hover, so anything
+   gated purely behind :hover:not(:focus) is otherwise permanently hidden. */
+@media (hover: none) {
+  .s-del,
+  .msg-actions,
+  .pop-act,
+  .card-edit,
+  .card-favorite {
+    opacity: 1;
+  }
+}
+
+/* ==================== OFF-CANVAS SIDEBAR ==================== */
+@media (max-width: 820px) {
+  #sidebar-close-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    background: var(--bg-3);
+    border: 1px solid var(--border);
+    color: var(--text-dim);
+    border-radius: 2px;
+    cursor: pointer;
+    flex-shrink: 0;
+  }
+  #sidebar-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+  }
+
+  #sidebar-open-btn, #home-sidebar-open-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 36px;
+    height: 36px;
+    background: var(--bg-3);
+    border: 1px solid var(--border);
+    color: var(--text-dim);
+    border-radius: 2px;
+    cursor: pointer;
+    flex-shrink: 0;
+  }
+
+  #sidebar {
+    position: fixed;
+    inset: 0 auto 0 0;
+    width: min(300px, 84vw);
+    min-width: 0;
+    z-index: 200;
+    box-shadow: var(--shadow);
+    transform: translateX(-100%);
+    transition: transform 0.22s ease;
+  }
+  body.sidebar-open #sidebar { transform: translateX(0); }
+
+  #sidebar-backdrop {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 150;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.22s ease;
+  }
+  body.sidebar-open #sidebar-backdrop {
+    opacity: 1;
+    pointer-events: auto;
+  }
+
+  body.sidebar-open { overflow: hidden; }
+}
+
+/* on wide/desktop viewports there's no toggle UI at all */
+@media (min-width: 821px) {
+  #sidebar-close-btn, #sidebar-open-btn, #home-sidebar-open-btn, #sidebar-backdrop {
+    display: none;
+  }
+}
+
+/* ==================== NARROW VIEWPORT LAYOUT FIXES ==================== */
+@media (max-width: 480px) {
+  /* home header: search goes full-width and stacks below the title */
+  #home-view { padding: 18px 14px; }
+  #home-head { align-items: stretch; }
+  #home-search { width: 100%; }
+
+  /* bot editor: Likes/Dislikes side-by-side is too cramped, stack instead */
+  .field-pair { flex-direction: column; gap: 0; }
+
+  /* chat header: collapse action buttons to icon-only so the title has room */
+  .header-btn span { display: none; }
+  .header-btn { padding: 8px; }
+  #chat-header { padding: 10px 12px; gap: 8px; }
+
+  /* popovers can't exceed the viewport width */
+  #history-popover, #mode-popover {
+    width: min(300px, calc(100vw - 24px));
+  }
+
+  /* touch target sizing */
+  .swatch { width: 34px; height: 34px; }
+  .emoji-grid button { width: 40px; height: 40px; }
+}
+
+/* ==================== VIEWPORT / KEYBOARD HANDLING ====================
+   100vh doesn't shrink when the mobile keyboard opens; 100dvh does. */
+html, body { height: 100dvh; }
+.modal {
+  max-height: calc(100dvh - 56px);
+}

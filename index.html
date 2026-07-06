@@ -1,0 +1,352 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Bot Master — Ultimate Local AI Chat</title>
+<link rel="stylesheet" href="css/base.css">
+<link rel="stylesheet" href="css/home.css">
+<link rel="stylesheet" href="css/chat.css">
+<link rel="stylesheet" href="css/timeline.css">
+<link rel="stylesheet" href="css/interactive.css">
+<link rel="stylesheet" href="css/prose.css">
+<link rel="stylesheet" href="css/math.css">
+<link rel="stylesheet" href="css/stats.css">
+<link rel="stylesheet" href="css/tabs.css">
+<link rel="stylesheet" href="css/roll.css">
+<link rel="stylesheet" href="css/rate.css">
+<link rel="stylesheet" href="css/codetools.css">
+<link rel="stylesheet" href="css/blocks2.css">
+<link rel="stylesheet" href="css/games.css">
+<link rel="stylesheet" href="css/animations.css">
+<link rel="stylesheet" href="css/accessibility.css">
+<link rel="stylesheet" href="css/modals.css">
+<link rel="stylesheet" href="css/commands.css">
+<link rel="stylesheet" href="css/mobile.css">
+</head>
+<body>
+
+<!-- ==================== SIDEBAR ==================== -->
+<div id="sidebar-backdrop"></div>
+<aside id="sidebar">
+  <div id="sidebar-header">
+    <h1 id="conn-status" title="Click to re-check connection">
+      <span class="logo" id="logo-holder"></span> <span class="brand">BOT MASTER</span>
+    </h1>
+    <button id="sidebar-close-btn" type="button" title="Close menu"></button>
+  </div>
+
+  <div id="sidebar-nav">
+    <button id="home-btn" class="nav-btn" type="button"></button>
+    <button id="create-bot-btn" class="nav-btn accent" type="button"></button>
+  </div>
+
+  <div id="sidebar-search-wrap">
+    <input type="text" id="sidebar-search" placeholder="Search chats…  (Ctrl+K)">
+  </div>
+
+  <div id="session-list"></div>
+
+  <div id="sidebar-footer">
+    <button id="theme-btn" class="foot-btn" title="Toggle theme" type="button"></button>
+    <button id="settings-btn" class="foot-btn wide" type="button"></button>
+  </div>
+</aside>
+
+<!-- ==================== MAIN ==================== -->
+<main id="main">
+
+  <!-- ---------- HOME VIEW ---------- -->
+  <section id="home-view">
+    <div id="home-head">
+      <button id="home-sidebar-open-btn" title="Open menu" type="button"></button>
+      <div>
+        <h2>Your Bots</h2>
+        <p class="sub">Create characters and chat with them on your own local AI — private, offline, yours.</p>
+      </div>
+      <input type="text" id="home-search" placeholder="Search bots…">
+    </div>
+    <div id="home-sections"></div>
+  </section>
+
+  <!-- ---------- CHAT VIEW ---------- -->
+  <section id="chat-view" hidden>
+    <div id="chat-header">
+      <button id="sidebar-open-btn" title="Open menu" type="button"></button>
+      <button id="back-btn" title="Back to home" type="button"></button>
+      <div id="chat-avatar-holder"></div>
+      <div id="chat-title-wrap">
+        <div id="chat-name"></div>
+        <div id="chat-session-title"></div>
+      </div>
+      <div id="chat-header-btns">
+        <button class="header-btn" id="new-chat-btn" title="Start a fresh chat" type="button"></button>
+        <div id="history-wrap">
+          <button class="header-btn" id="history-btn" title="Chat history" type="button"></button>
+          <div id="history-popover" hidden></div>
+        </div>
+        <button class="header-btn" id="export-chat-btn" title="Export this chat as text" type="button"></button>
+        <button class="header-btn" id="edit-bot-btn" title="Edit this bot" type="button"></button>
+      </div>
+    </div>
+
+    <div id="messages-wrap">
+      <div id="messages"></div>
+      <button id="scroll-bottom-btn" title="Jump to latest" type="button"></button>
+    </div>
+
+    <div id="input-area">
+      <div id="image-attach-preview" hidden>
+        <img id="image-attach-thumb" alt="">
+        <button id="image-attach-remove" title="Remove image" type="button"></button>
+      </div>
+      <div id="input-row">
+        <div id="mode-wrap">
+          <button id="mode-btn" title="Chat mode" type="button"></button>
+          <div id="mode-popover" hidden></div>
+        </div>
+        <div id="command-popover" hidden></div>
+        <button id="image-attach-btn" title="Attach an image" type="button"></button>
+        <textarea id="msg-input" rows="1" placeholder="Type a message…"></textarea>
+        <button id="send-btn" title="Send" type="button"></button>
+      </div>
+    </div>
+  </section>
+</main>
+
+<!-- ==================== BOT EDITOR MODAL ==================== -->
+<div class="modal-overlay" id="bot-modal">
+  <div class="modal modal-wide">
+    <h2 id="bot-modal-title">Create a Bot</h2>
+    <div class="editor-grid">
+
+      <div class="avatar-side">
+        <div id="img-drop" title="Click or drop an image here">
+          <img id="img-preview" alt="" hidden>
+          <div id="img-placeholder">
+            <span id="editor-emoji-big"></span>
+            <span class="drop-hint">Click or drop an image</span>
+          </div>
+        </div>
+        <div class="avatar-btns">
+          <button class="btn sm" id="img-upload-btn" type="button"></button>
+          <button class="btn sm danger" id="img-remove-btn" type="button" hidden></button>
+        </div>
+        <div class="side-label">…or pick an icon avatar</div>
+        <div class="emoji-grid" id="emoji-grid"></div>
+        <div class="side-label">Accent color</div>
+        <div id="color-swatches"></div>
+      </div>
+
+      <div class="fields-side">
+        <div class="field">
+          <label>Name</label>
+          <input type="text" id="bot-name" placeholder="e.g. Minecraft Steve" maxlength="40">
+        </div>
+        <div class="field">
+          <label>Tagline</label>
+          <input type="text" id="bot-tagline" placeholder="e.g. A blocky miner from Minecraft" maxlength="80">
+        </div>
+        <div class="field">
+          <label>Personality <span class="label-hint">(system prompt — who is this bot?)</span></label>
+          <textarea id="bot-prompt" rows="5" placeholder="You are Steve from Minecraft. You talk about mining, crafting, creepers and diamonds. You get nervous when night falls…"></textarea>
+        </div>
+        <div class="field">
+          <label>Greeting <span class="label-hint">(first message, optional)</span></label>
+          <textarea id="bot-greeting" rows="2" placeholder="Hey! Wanna go mining? I heard there's diamonds at Y=-58!"></textarea>
+        </div>
+        <div class="field">
+          <label>Creativity: <span class="range-val" id="temp-val">0.8</span></label>
+          <input type="range" id="bot-temp" min="0" max="2" step="0.1" value="0.8">
+          <div class="hint">Low = focused &amp; predictable · High = wild &amp; creative</div>
+        </div>
+        <div class="field">
+          <label>Category</label>
+          <div id="category-row">
+            <select id="bot-category"></select>
+            <button class="btn sm" id="category-manage-btn" type="button"></button>
+          </div>
+        </div>
+
+        <details class="adv" id="bot-adv">
+          <summary>Advanced persona</summary>
+          <div class="field">
+            <label>Personality traits <span class="label-hint">(comma-separated, optional)</span></label>
+            <input type="text" id="bot-traits" placeholder="e.g. brave, curious, easily distracted" maxlength="200">
+          </div>
+          <div class="field">
+            <label>Backstory <span class="label-hint">(history/origin, optional)</span></label>
+            <textarea id="bot-backstory" rows="2" placeholder="Grew up in a village near the Nether portal, learned to mine from an old prospector…"></textarea>
+          </div>
+          <div class="field">
+            <label>Speech style / quirks <span class="label-hint">(optional)</span></label>
+            <input type="text" id="bot-speechstyle" placeholder="e.g. short sentences, says 'ope' a lot, never uses contractions" maxlength="200">
+          </div>
+          <div class="field field-pair">
+            <div>
+              <label>Likes <span class="label-hint">(optional)</span></label>
+              <input type="text" id="bot-likes" placeholder="e.g. diamonds, sunrises" maxlength="150">
+            </div>
+            <div>
+              <label>Dislikes <span class="label-hint">(optional)</span></label>
+              <input type="text" id="bot-dislikes" placeholder="e.g. creepers, loud noises" maxlength="150">
+            </div>
+          </div>
+          <div class="field">
+            <label>Scenario <span class="label-hint">(the setting or situation, optional)</span></label>
+            <textarea id="bot-scenario" rows="2" placeholder="Steve and the user are deep in a cave, torches running low…"></textarea>
+          </div>
+          <div class="field">
+            <label>Example dialogue <span class="label-hint">(teaches the bot its exact style)</span></label>
+            <textarea id="bot-example" rows="4" placeholder="User: hey steve&#10;Steve: Heya! Grab a pickaxe, I found a MASSIVE ravine. So many iron veins down there!&#10;User: is it safe?&#10;Steve: Uhh… define safe? I heard hissing earlier. Probably nothing!! …probably."></textarea>
+          </div>
+          <div class="field">
+            <label>Focus (top_p): <span class="range-val" id="topp-val">1</span></label>
+            <input type="range" id="bot-topp" min="0.1" max="1" step="0.05" value="1">
+            <div class="hint">Lower = sticks to safer word choices · 1 = off</div>
+          </div>
+          <div class="field">
+            <label>Nickname for you <span class="label-hint">(what this bot calls the user, optional)</span></label>
+            <input type="text" id="bot-nickname" placeholder="e.g. buddy, matey, adventurer…" maxlength="40">
+          </div>
+          <div class="field">
+            <label>Live system prompt preview <span class="label-hint">(exactly what the bot sees, read-only)</span></label>
+            <textarea id="bot-prompt-preview" rows="6" readonly></textarea>
+          </div>
+        </details>
+      </div>
+    </div>
+
+    <div class="modal-actions">
+      <button class="btn danger" id="bot-delete-btn" type="button"></button>
+      <button class="btn" id="bot-duplicate-btn" type="button"></button>
+      <button class="btn" id="bot-export-btn" title="Save this bot as a file to share" type="button"></button>
+      <span class="spacer"></span>
+      <button class="btn" id="bot-cancel-btn" type="button">Cancel</button>
+      <button class="btn primary" id="bot-save-btn" type="button">Save Bot</button>
+    </div>
+  </div>
+</div>
+
+<!-- ==================== CATEGORY MANAGER MODAL ==================== -->
+<div class="modal-overlay" id="category-modal">
+  <div class="modal modal-narrow">
+    <h2>Manage Categories</h2>
+    <div id="category-list"></div>
+    <div id="category-add-row">
+      <input type="text" id="category-new-name" placeholder="New category name" maxlength="40">
+      <button class="btn sm" id="category-add-btn" type="button"></button>
+    </div>
+    <div class="modal-actions">
+      <span class="spacer"></span>
+      <button class="btn primary" id="category-done-btn" type="button">Done</button>
+    </div>
+  </div>
+</div>
+
+<!-- ==================== SETTINGS MODAL ==================== -->
+<div class="modal-overlay" id="settings-modal">
+  <div class="modal">
+    <h2>Settings</h2>
+
+    <div class="settings-section">Server</div>
+    <div class="field">
+      <label>Server URL</label>
+      <input type="text" id="set-url" placeholder="http://127.0.0.1:8081">
+      <div class="hint">Any OpenAI-compatible local server: llama.cpp, LM Studio, Ollama, KoboldCpp…</div>
+    </div>
+    <div class="field">
+      <label>Model</label>
+      <div id="model-row">
+        <select id="set-model"><option value="">(auto — server default)</option></select>
+        <button class="btn sm" id="refresh-models-btn" title="Fetch model list from server" type="button"></button>
+      </div>
+      <div id="settings-test-result"></div>
+    </div>
+    <div class="field">
+      <label>Max response length: <span class="range-val" id="maxtok-val">1024</span> tokens</label>
+      <input type="range" id="set-maxtok" min="128" max="15000" step="128" value="1024">
+      <div class="hint">Higher lets bots write longer code/files without getting cut off, but uses more memory/time per reply.</div>
+    </div>
+    <div class="field checkbox-field">
+      <label><input type="checkbox" id="set-autocontinue"> Auto-continue cut-off responses</label>
+      <div class="hint">If a reply hits the token limit mid code block, automatically ask the model to continue instead of leaving it broken (up to 3 times).</div>
+    </div>
+
+    <div class="settings-section">Appearance</div>
+    <div class="field checkbox-field">
+      <label><input type="checkbox" id="set-dyslexiafont"> Dyslexia-friendly font</label>
+      <div class="hint">Switches chat text to OpenDyslexic, a font designed for easier reading.</div>
+    </div>
+
+    <div class="settings-section">Personas <span class="label-hint">(who the bots think you are — switch anytime)</span></div>
+    <div class="field">
+      <label>Active persona</label>
+      <div id="persona-row">
+        <select id="persona-select"></select>
+        <button class="btn sm" id="persona-add-btn" title="New persona" type="button"></button>
+        <button class="btn sm danger" id="persona-del-btn" title="Delete persona" type="button"></button>
+      </div>
+    </div>
+    <div id="persona-fields">
+      <div class="field">
+        <label>Persona name</label>
+        <input type="text" id="persona-name" placeholder="e.g. Billy" maxlength="40">
+      </div>
+      <div class="field">
+        <label>About this persona</label>
+        <textarea id="persona-desc" rows="2" placeholder="e.g. A 15-year-old gamer who loves Minecraft and coding"></textarea>
+      </div>
+    </div>
+
+    <div class="settings-section">Data</div>
+    <div class="data-btns">
+      <button class="btn" id="export-btn" type="button"></button>
+      <button class="btn" id="import-btn" type="button"></button>
+      <button class="btn danger" id="reset-btn" type="button"></button>
+    </div>
+
+    <div class="modal-actions">
+      <span class="spacer"></span>
+      <button class="btn" id="settings-cancel-btn" type="button">Cancel</button>
+      <button class="btn primary" id="settings-save-btn" type="button">Save</button>
+    </div>
+  </div>
+</div>
+
+<div id="preview-fullscreen" hidden>
+  <div id="preview-fullscreen-bar">
+    <span>Preview</span>
+    <button id="preview-fullscreen-close" type="button" title="Close (Esc)"></button>
+  </div>
+  <div id="preview-fullscreen-body"></div>
+</div>
+
+<div id="toast"></div>
+
+<input type="file" id="bot-img-input" accept="image/*" hidden>
+<input type="file" id="import-input" accept=".json,application/json" hidden>
+<input type="file" id="chat-image-input" accept="image/*" hidden>
+
+<script src="js/vendor/mathjs.min.js"></script>
+<script src="js/vendor/lucide-icons.js"></script>
+<script src="js/icons.js"></script>
+<script src="js/storage.js"></script>
+<script src="js/modes.js"></script>
+<script src="js/markdown.js"></script>
+<script src="js/blocks2.js"></script>
+<script src="js/ui.js"></script>
+<script src="js/api.js"></script>
+<script src="js/home.js"></script>
+<script src="js/bots.js"></script>
+<script src="js/games.js"></script>
+<script src="js/games/tictactoe.js"></script>
+<script src="js/games/hangman.js"></script>
+<script src="js/games/connect4.js"></script>
+<script src="js/games/wordguess.js"></script>
+<script src="js/chats.js"></script>
+<script src="js/commands.js"></script>
+<script src="js/settings.js"></script>
+<script src="js/app.js"></script>
+</body>
+</html>

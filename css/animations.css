@@ -1,0 +1,16 @@
+/* ============================================================
+   Bot Master — shared motion: message entrance animation
+   ============================================================ */
+
+@keyframes msg-in {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.msg.msg-enter {
+  animation: msg-in 0.22s ease;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .msg.msg-enter { animation: none; }
+}
