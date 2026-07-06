@@ -1,0 +1,123 @@
+/* ============================================================
+   Botivo — home view hero banner + matching footer band, each
+   with a single seamless animated wave divider (drawn for this
+   app), so the bot grid sits sandwiched between two orange bands
+   ============================================================ */
+
+#home-hero {
+  position: relative;
+  margin: -32px -36px 28px;
+  background: linear-gradient(135deg, var(--accent) 0%, var(--accent-hover) 100%);
+  overflow: hidden;
+}
+
+#home-hero #home-head {
+  position: relative;
+  z-index: 2;
+  min-height: 260px;
+  margin-bottom: 0;
+  padding: 32px 36px 0;
+  align-items: center;
+}
+#home-hero #home-head h2 {
+  color: #fff;
+  font-size: 34px;
+  display: inline-block;
+  animation: botivo-hero-float 6s ease-in-out infinite;
+}
+#home-hero #home-head .sub {
+  color: rgba(255, 255, 255, 0.85);
+  font-size: 15px;
+  display: inline-block;
+  animation: botivo-hero-float 6s ease-in-out infinite;
+  animation-delay: -0.6s;
+}
+#home-hero #home-search {
+  background: rgba(255, 255, 255, 0.92);
+  border: 1px solid #000;
+  animation: botivo-hero-float 6s ease-in-out infinite;
+  animation-delay: -1.2s;
+}
+
+/* gentle bob synced to the wave's pace, giving the loose feel of
+   floating on it rather than a literal 1:1 physical link */
+@keyframes botivo-hero-float {
+  0%, 100% { transform: translateY(0); }
+  50%      { transform: translateY(-6px); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  #home-hero #home-head h2,
+  #home-hero #home-head .sub,
+  #home-hero #home-search {
+    animation: none;
+  }
+}
+
+#home-hero-waves {
+  position: relative;
+  z-index: 1;
+  display: block;
+  width: 100%;
+  height: 70px;
+  margin-bottom: -2px;
+}
+#botivo-wave-track {
+  fill: var(--bg);
+  animation: botivo-wave-scroll 12s linear infinite;
+}
+
+/* two tiles placed edge-to-edge (x=0 and x=400, matching the
+   viewBox width) sliding left by exactly one tile width — the
+   moment the first tile scrolls fully off, the second is in the
+   exact position the first started in, so the loop has no seam
+   and no dependence on the container's actual pixel width */
+@keyframes botivo-wave-scroll {
+  from { transform: translateX(0); }
+  to   { transform: translateX(-400px); }
+}
+
+@media (max-width: 700px) {
+  #home-hero #home-head { min-height: 200px; padding-top: 20px; }
+  #home-hero #home-head h2 { font-size: 26px; }
+  #home-hero-waves { height: 40px; }
+}
+
+@media (max-width: 480px) {
+  /* mobile.css shrinks #home-view padding to 18px 14px — keep the
+     hero's negative margin in lockstep so it still bleeds
+     edge-to-edge, and move #home-head's inset to match */
+  #home-hero { margin: -18px -14px 20px; }
+  #home-hero #home-head { padding-left: 14px; padding-right: 14px; }
+}
+
+/* ==================== FOOTER (bottom "bun" of the sandwich) ==================== */
+#home-footer {
+  position: relative;
+  margin: 28px -36px -32px;
+}
+#home-footer-waves {
+  position: relative;
+  z-index: 1;
+  display: block;
+  width: 100%;
+  height: 70px;
+  margin-top: -2px;
+}
+#botivo-wave-track-2 {
+  fill: var(--accent);
+  animation: botivo-wave-scroll 12s linear infinite;
+}
+#home-footer-band {
+  height: 120px;
+  background: var(--accent);
+}
+
+@media (max-width: 700px) {
+  #home-footer-waves { height: 40px; }
+  #home-footer-band { height: 80px; }
+}
+
+@media (max-width: 480px) {
+  #home-footer { margin: 20px -14px -18px; }
+}

@@ -92,8 +92,11 @@ button { font-family: inherit; }
   gap: 10px;
 }
 #sidebar-header .brand {
-  font-weight: 900;
-  letter-spacing: 0.08em;
+  font-family: "Segoe Script", "Bickham Script MT", "Brush Script MT", cursive, "Segoe UI Variable", sans-serif;
+  font-style: italic;
+  font-weight: 700;
+  font-size: 34px;
+  letter-spacing: 0.02em;
 }
 #sidebar-header .brand { color: var(--accent); }
 
@@ -304,7 +307,7 @@ button { font-family: inherit; }
 .msg-actions .ic, .pop-act .ic, .s-del .ic, .code-copy .ic { width: 13px; height: 13px; }
 .card-edit .ic, .card-favorite .ic { width: 14px; height: 14px; }
 .logo { display: inline-flex; }
-.logo .ic { width: 32px; height: 32px; color: var(--accent); }
+.logo .ic { width: 44px; height: 44px; color: var(--accent); }
 .create-inner .ic { width: 36px; height: 36px; color: var(--accent); }
 
 /* icon avatars: flat color block + white line icon */

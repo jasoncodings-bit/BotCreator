@@ -105,8 +105,7 @@ function openBotEditor(botId) {
   $("bot-topp").value = bot ? (bot.topP ?? 1) : 1;
   $("topp-val").textContent = $("bot-topp").value;
   $("bot-nickname").value = bot ? (bot.nickname || "") : "";
-  $("bot-adv").open = !!(bot && (bot.scenario || bot.example || bot.nickname || bot.traits ||
-    bot.backstory || bot.speechStyle || bot.likes || bot.dislikes || (bot.topP != null && bot.topP < 1)));
+  $("bot-adv").open = false;
 
   editorIcon = bot ? (bot.icon || "bot") : AVATAR_ICONS[Math.floor(Math.random() * AVATAR_ICONS.length)];
   editorImage = bot ? (bot.image || null) : null;

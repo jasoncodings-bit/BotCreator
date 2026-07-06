@@ -95,15 +95,20 @@ function applyTheme() {
 
 /* ---------- init ---------- */
 
-/* dedicated flat logo mark: a solid badge with a fixed black outline —
-   the fill color is driven by currentColor (red/green connection state)
-   but the outline never changes and there's no glow/filter effect */
+/* dedicated flat logo mark: a friendly robot-head badge with a fixed
+   black outline — the fill color is driven by currentColor (red/green
+   connection state) but the outline never changes and there's no
+   glow/filter effect. Original silhouette (rounded dome, single
+   antenna, dot eyes) — not a copy of any third-party robot mascot. */
 function logoMarkup() {
   return '<svg class="ic" viewBox="0 0 24 24" aria-hidden="true">' +
-    '<path d="M12 2 20.5 7v10L12 22 3.5 17V7Z" fill="currentColor" stroke="#000" stroke-width="1.6" stroke-linejoin="round"/>' +
-    '<circle cx="8.7" cy="11.5" r="1.15" fill="#000"/>' +
-    '<circle cx="15.3" cy="11.5" r="1.15" fill="#000"/>' +
-    '<path d="M8.7 15.2h6.6" stroke="#000" stroke-width="1.6" stroke-linecap="round"/>' +
+    '<path d="M12 2.2v2.1" stroke="#000" stroke-width="1.6" stroke-linecap="round"/>' +
+    '<circle cx="12" cy="2.3" r="1.15" fill="currentColor" stroke="#000" stroke-width="1.2"/>' +
+    '<path d="M5.5 10.5A6.5 6.5 0 0 1 12 5a6.5 6.5 0 0 1 6.5 5.5V16a2.5 2.5 0 0 1-2.5 2.5H8A2.5 2.5 0 0 1 5.5 16Z" ' +
+      'fill="currentColor" stroke="#000" stroke-width="1.4" stroke-linejoin="round"/>' +
+    '<circle cx="9.2" cy="11.6" r="1.35" fill="#000"/>' +
+    '<circle cx="14.8" cy="11.6" r="1.35" fill="#000"/>' +
+    '<path d="M9 15.3h6" stroke="#000" stroke-width="1.4" stroke-linecap="round"/>' +
     '</svg>';
 }
 
@@ -156,6 +161,7 @@ function closePreviewFullscreen() {
 
 function init() {
   DB.init();
+  scheduleBootLoaderHide();
   wireStaticIcons();
   applyTheme();
   applyDyslexiaFont();

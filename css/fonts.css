@@ -1,0 +1,20 @@
+/* ============================================================
+   Botivo — display fonts: Jersey M54 (headings),
+   vendored locally, see js/vendor/fonts/
+   ============================================================ */
+
+@font-face {
+  font-family: "Jersey M54";
+  src: url("../js/vendor/fonts/JerseyM54.ttf") format("truetype");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+#home-head h2,
+.home-section-title,
+.modal h2,
+.settings-section {
+  font-family: "Jersey M54", "Segoe UI Black", "Segoe UI Variable", "Arial Black", "Segoe UI", system-ui, sans-serif;
+  letter-spacing: 0.02em;
+}

@@ -507,7 +507,7 @@ function mdInline(s) {
   s = s.replace(/\|\|([^|\n]+)\|\|/g, '<span class="spoiler" title="Click to reveal">$1</span>');
   s = s.replace(/\[\[([^\[\]\n]{1,24})\]\]/g, '<kbd>$1</kbd>');
   s = s.replace(/==([^=\n]+)==/g, '<mark>$1</mark>');
-  s = s.replace(/:([a-z][a-z0-9-]{1,20}):/g, (m, name) => {
+  s = s.replace(/:([a-z][a-z0-9-]{0,20}):/g, (m, name) => {
     if (hasIcon(name)) return icon(name, "inline-ic");
     if (NAME_TO_EMOJI[name]) return NAME_TO_EMOJI[name];
     return m;

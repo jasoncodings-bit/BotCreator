@@ -107,17 +107,128 @@ const ICON_ALIASES = {
   bookmark: "bookmark", map: "map", compass: "compass",
   umbrella: "umbrella", thermometer: "thermometer", brain: "brain",
   tooth: "bluetooth", pill: "pill", stethoscope: "stethoscope",
-  syringe: "syringe", bone: "bone"
+  syringe: "syringe", bone: "bone",
+
+  /* emotions / reactions a bot writes very often */
+  happy: "smile", laughing: "laugh", laugh: "laugh", celebrate: "party-popper",
+  party: "party-popper", excited: "party-popper", angry: "angry", mad: "angry",
+  cry: "frown", crying: "frown", confused: "help-circle", love: "heart",
+  cool: "glasses", shy: "smile",
+  sleepy: "moon", tired: "moon", scared: "ghost", nervous: "alert-circle",
+
+  /* everyday objects/concepts */
+  win: "trophy", winner: "trophy", success: "check-circle", fail: "x-circle",
+  error: "x-circle", warning: "triangle-alert", danger: "triangle-alert",
+  time: "clock", clock: "clock", calendar: "calendar", date: "calendar",
+  food: "utensils", eat: "utensils", drink: "cup-soda", coffee: "coffee",
+  tea: "cup-soda", pizza: "pizza", cake: "cake", gift: "gift",
+  present: "gift", present2: "gift", weather: "cloud-sun", rain: "cloud-rain",
+  snow: "snowflake", sun: "sun", moon: "moon", star: "star", stars: "sparkles",
+  sparkle: "sparkles", sparkles: "sparkles", magic: "wand-2", wand: "wand-2",
+  book: "book", read: "book-open", write: "pen-line", pen: "pen-line",
+  phone: "phone", call: "phone", email: "mail", mail: "mail",
+  message: "message-circle", chat: "message-circle", speak: "message-circle",
+  talk: "message-circle", camera: "camera", photo: "image", picture: "image",
+  video: "video", movie: "clapperboard", tv: "tv", computer: "monitor",
+  laptop: "laptop", keyboard: "keyboard", mouse: "mouse", game: "gamepad-2",
+  play: "play", pause: "pause", stop: "square", music2: "music",
+  song: "music", headphones: "headphones", car: "car", drive: "car",
+  plane: "plane", flight: "plane", travel: "map", train: "train-front",
+  bike: "bike", walk: "footprints", run: "footprints", house: "home",
+  building: "building-2", city: "building-2", plant: "sprout", flower: "flower-2",
+  animal: "paw-print", pet: "paw-print", dog: "dog", cat2: "cat",
+  bird: "bird", fish: "fish", bug: "bug", spider: "bug",
+  strong: "dumbbell", exercise: "dumbbell", gym: "dumbbell", sport: "trophy",
+  ball: "circle", science: "flask-conical", experiment: "flask-conical",
+  space: "rocket", planet: "globe", world: "globe", earth: "globe",
+  key: "key", door: "door-open", box: "package", package: "package",
+  shopping: "shopping-cart", cart: "shopping-cart", buy: "shopping-cart",
+  wallet: "wallet", card: "credit-card", bank: "landmark",
+  work: "briefcase", job: "briefcase", office: "briefcase",
+  paint: "palette", art: "palette", draw: "pen-line", design: "palette",
+  puzzle: "puzzle", chess: "gamepad-2", cards: "spade",
+  battery: "battery", power: "zap", plug: "plug", wifi: "wifi",
+  bluetooth2: "bluetooth", download2: "download", upload2: "upload",
+  save: "save", folder: "folder", file: "file", document: "file-text",
+  print: "printer", scan: "scan", filter: "filter", sort: "arrow-up-down"
 };
 
+/* fuzzy fallback: a bot will write plausible natural-language names
+   ("laughing", "celebrate", "money-bag") that don't exist verbatim in
+   Lucide's kebab-case vocabulary. Rather than only catching the ~30
+   words in ICON_ALIASES, score every vendored icon name by word-token
+   overlap + substring containment against the requested name and take
+   the best match above a threshold. All local, no network — just a
+   smarter search over the catalogue we already ship. */
+/* crude singular form: strips a trailing "es"/"s" plural so
+   "trophies"/"trophy", "boxes"/"box", "cats"/"cat" line up. Not
+   linguistically perfect, just enough to bridge common bot phrasing. */
+function singularize(word) {
+  if (word.length > 4 && word.endsWith("ies")) return word.slice(0, -3) + "y";
+  if (word.length > 3 && word.endsWith("es")) return word.slice(0, -2);
+  if (word.length > 3 && word.endsWith("s") && !word.endsWith("ss")) return word.slice(0, -1);
+  return word;
+}
+
+let _lucideNameCache = null;
+function fuzzyMatchIconName(name) {
+  if (typeof LUCIDE_ICONS === "undefined") return null;
+  if (!_lucideNameCache) _lucideNameCache = Object.keys(LUCIDE_ICONS);
+
+  const reqTokens = name.split("-").filter(Boolean).map(singularize);
+  let best = null, bestScore = 0;
+
+  for (const cand of _lucideNameCache) {
+    if (cand === name) return cand;
+    const candTokens = cand.split("-").filter(Boolean).map(singularize);
+    let score = 0;
+
+    /* whole-word overlap (after singularizing): the primary signal —
+       real matches share an actual word, not a coincidental fragment
+       ("celebration" contains the substring "ratio" but shares no
+       word with it). A single shared token only counts if it's a
+       substantial word (>=5 chars) — short generic tokens like "bag"/
+       "high"/"phone" appear across many unrelated compounds and cause
+       wrong matches ("money-bag" -> "paper-bag" on a shared "bag"). */
+    const sharedTokens = reqTokens.filter(t => candTokens.includes(t));
+    if (sharedTokens.length >= 2) {
+      score += sharedTokens.length * 4;
+    } else if (sharedTokens.length === 1 && sharedTokens[0].length >= 5) {
+      score += 4;
+    }
+
+    /* single-token request as a whole-word prefix/suffix of a single-
+       token candidate, or vice versa — catches real compounds like
+       "airplane"/"plane" or "wristwatch"/"watch" without matching
+       arbitrary short substrings buried mid-word */
+    if (reqTokens.length === 1 && candTokens.length === 1) {
+      const r = reqTokens[0], c = candTokens[0];
+      /* require the shorter side to be a substantial word on its own
+         (>=5 chars) — short generic suffixes like "bag"/"mic"/"high"
+         appear in dozens of unrelated compounds and produce wrong
+         matches (e.g. "money-bag" landing on "paper-bag") */
+      const longEnough = Math.min(r.length, c.length) >= 5;
+      const compound = longEnough && (r.startsWith(c) || r.endsWith(c) || c.startsWith(r) || c.endsWith(r));
+      if (compound) score += 4;
+    }
+
+    if (score > bestScore) { bestScore = score; best = cand; }
+  }
+
+  return bestScore >= 4 ? best : null;
+}
+
 /* has this name been custom hand-drawn (ICONS), an alias of a real
-   Lucide name, or a direct hit in the vendored ~2000-icon catalogue
-   (LUCIDE_ICONS, js/vendor/lucide-icons.js)? */
+   Lucide name, a direct hit in the vendored ~2000-icon catalogue
+   (LUCIDE_ICONS, js/vendor/lucide-icons.js), or close enough to one
+   via fuzzy matching? */
 function resolveIconName(name) {
   if (ICONS[name]) return name;
   if (typeof LUCIDE_ICONS !== "undefined") {
     if (LUCIDE_ICONS[name]) return name;
     if (ICON_ALIASES[name] && LUCIDE_ICONS[ICON_ALIASES[name]]) return ICON_ALIASES[name];
+    const fuzzy = fuzzyMatchIconName(name);
+    if (fuzzy) return fuzzy;
   }
   return null;
 }

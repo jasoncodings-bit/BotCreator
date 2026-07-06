@@ -193,7 +193,7 @@ function importFile(file) {
       return;
     }
 
-    toast("Unrecognized file — expected a Bot Master backup or bot file");
+    toast("Unrecognized file — expected a Botivo backup or bot file");
   };
   reader.readAsText(file);
 }
