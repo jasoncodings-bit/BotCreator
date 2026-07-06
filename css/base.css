@@ -24,13 +24,13 @@
 }
 
 :root[data-theme="light"] {
-  --bg: #eef0f7;
+  --bg: #faf6f0;
   --bg-2: #ffffff;
-  --bg-3: #f2f3fa;
-  --bg-4: #e4e7f2;
-  --border: #d5d9e8;
-  --text: #23263a;
-  --text-dim: #6a7089;
+  --bg-3: #f5ede3;
+  --bg-4: #eee1d0;
+  --border: #e8dcc8;
+  --text: #2a2420;
+  --text-dim: #8a7f70;
   --accent: #d97a06;
   --accent-2: #2aa8f0;
   --accent-hover: #b8660a;
@@ -40,7 +40,7 @@
   --red: #e2404f;
   --red-soft: rgba(226, 64, 79, 0.10);
   --user-bubble: #d97a06;
-  --shadow: 0 8px 32px rgba(40, 45, 80, 0.18);
+  --shadow: 0 4px 16px rgba(60, 45, 20, 0.10);
 }
 
 * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -77,8 +77,12 @@ button { font-family: inherit; }
   flex-direction: column;
 }
 #sidebar-header {
-  padding: 18px 16px 12px;
+  height: 68px;
+  padding: 0 16px;
+  display: flex;
+  align-items: center;
   border-bottom: 1px solid var(--border);
+  box-sizing: border-box;
 }
 #sidebar-header h1 {
   font-size: 24px;
@@ -298,7 +302,7 @@ button { font-family: inherit; }
 }
 #send-btn .ic, #back-btn .ic { width: 18px; height: 18px; }
 .msg-actions .ic, .pop-act .ic, .s-del .ic, .code-copy .ic { width: 13px; height: 13px; }
-.card-edit .ic { width: 14px; height: 14px; color: #fff; }
+.card-edit .ic, .card-favorite .ic { width: 14px; height: 14px; }
 .logo { display: inline-flex; }
 .logo .ic { width: 32px; height: 32px; color: var(--accent); }
 .create-inner .ic { width: 36px; height: 36px; color: var(--accent); }

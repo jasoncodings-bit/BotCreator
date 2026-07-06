@@ -84,7 +84,7 @@ function checklistBlockHtml(block) {
   const gid = "checklist-" + (checklistCounter++);
   const rows = items.map((text, i) =>
     '<button class="checklist-item" type="button" data-checklist="' + gid + '" data-index="' + i + '">' +
-    '<span class="checklist-box">' + icon("check") + '</span>' +
+    '<span class="checklist-box">' + icon("check", null, true) + '</span>' +
     '<span class="checklist-text">' + escapeHtml(text) + "</span></button>"
   ).join("");
   return '<div class="checklistblock" data-checklist-group="' + gid + '">' +

@@ -706,7 +706,7 @@ function renderMarkdown(src) {
       if (task) {
         const done = task[1] !== " ";
         html += '<li class="task"><span class="cb' + (done ? " on" : "") + '">' +
-          (done ? icon("check") : "") + "</span>" +
+          (done ? icon("check", null, true) : "") + "</span>" +
           (done ? "<s>" + mdInline(task[2]) + "</s>" : mdInline(task[2])) + "</li>";
       } else {
         html += "<li>" + mdInline(content) + "</li>";

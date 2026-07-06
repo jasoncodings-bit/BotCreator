@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" data-theme="dark">
+<html lang="en" data-theme="light">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -48,7 +48,6 @@
   <div id="session-list"></div>
 
   <div id="sidebar-footer">
-    <button id="theme-btn" class="foot-btn" title="Toggle theme" type="button"></button>
     <button id="settings-btn" class="foot-btn wide" type="button"></button>
   </div>
 </aside>
@@ -62,7 +61,7 @@
       <button id="home-sidebar-open-btn" title="Open menu" type="button"></button>
       <div>
         <h2>Your Bots</h2>
-        <p class="sub">Create characters and chat with them on your own local AI — private, offline, yours.</p>
+        <p class="sub">Make a character, chat with it on your own local AI. Nothing leaves your machine.</p>
       </div>
       <input type="text" id="home-search" placeholder="Search bots…">
     </div>
@@ -253,7 +252,7 @@
     <div class="field">
       <label>Server URL</label>
       <input type="text" id="set-url" placeholder="http://127.0.0.1:8081">
-      <div class="hint">Any OpenAI-compatible local server: llama.cpp, LM Studio, Ollama, KoboldCpp…</div>
+      <div class="hint">Works with llama.cpp, LM Studio, Ollama, KoboldCpp, or anything else that speaks the OpenAI API.</div>
     </div>
     <div class="field">
       <label>Model</label>
@@ -266,17 +265,21 @@
     <div class="field">
       <label>Max response length: <span class="range-val" id="maxtok-val">1024</span> tokens</label>
       <input type="range" id="set-maxtok" min="128" max="15000" step="128" value="1024">
-      <div class="hint">Higher lets bots write longer code/files without getting cut off, but uses more memory/time per reply.</div>
+      <div class="hint">Raise this if bots keep getting cut off mid-answer. Uses more memory and takes longer per reply.</div>
     </div>
     <div class="field checkbox-field">
       <label><input type="checkbox" id="set-autocontinue"> Auto-continue cut-off responses</label>
-      <div class="hint">If a reply hits the token limit mid code block, automatically ask the model to continue instead of leaving it broken (up to 3 times).</div>
+      <div class="hint">If a reply hits the token limit mid code block, ask the model to keep going instead of leaving it broken (tries up to 3 times).</div>
     </div>
 
     <div class="settings-section">Appearance</div>
     <div class="field checkbox-field">
+      <label><input type="checkbox" id="set-darkmode"> Dark mode</label>
+      <div class="hint">Switches the app to a dark palette.</div>
+    </div>
+    <div class="field checkbox-field">
       <label><input type="checkbox" id="set-dyslexiafont"> Dyslexia-friendly font</label>
-      <div class="hint">Switches chat text to OpenDyslexic, a font designed for easier reading.</div>
+      <div class="hint">Switches chat text to OpenDyslexic.</div>
     </div>
 
     <div class="settings-section">Personas <span class="label-hint">(who the bots think you are — switch anytime)</span></div>

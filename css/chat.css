@@ -11,18 +11,20 @@
 
 /* ==================== HEADER ==================== */
 #chat-header {
-  padding: 12px 20px;
+  height: 68px;
+  padding: 0 20px;
   border-bottom: 1px solid var(--border);
   display: flex;
   align-items: center;
   gap: 12px;
   background: var(--bg-2);
+  box-sizing: border-box;
 }
 #back-btn {
   background: var(--bg-3);
   border: 1px solid var(--border);
   color: var(--text-dim);
-  width: 36px; height: 36px;
+  width: 42px; height: 42px;
   border-radius: 2px;
   font-size: 17px;
   cursor: pointer;
@@ -454,11 +456,13 @@
   color: var(--text);
   font-family: inherit;
   font-size: 14.5px;
-  padding: 11px 14px;
+  padding: 10px 14px;
   resize: none;
   max-height: 170px;
-  line-height: 1.5;
+  min-height: 42px;
+  line-height: 22px;
   outline: none;
+  box-sizing: border-box;
 }
 #send-btn {
   background: var(--grad);

@@ -73,7 +73,7 @@ function renderSidebar() {
     info.appendChild(el("div", "s-snippet", s.snippet || s.title));
     row.appendChild(info);
 
-    const del = iconBtn("trash", "s-del", "Delete chat");
+    const del = iconBtn("trash", "s-del", "Delete chat", null, true);
     del.onclick = e => { e.stopPropagation(); deleteSessionUI(s.id); };
     row.appendChild(del);
 
@@ -83,20 +83,14 @@ function renderSidebar() {
 
   if (!list.children.length) {
     list.appendChild(el("div", "empty-list",
-      q ? "No chats match your search" : "No chats yet — pick a bot on the Home screen to start talking!"));
+      q ? "No chats match your search" : "No chats yet. Pick a bot on the Home screen to start talking."));
   }
 }
 
 /* ---------- theme ---------- */
 
 function applyTheme() {
-  document.documentElement.dataset.theme = DB.settings.theme || "dark";
-  $("theme-btn").innerHTML = icon(DB.settings.theme === "light" ? "moon" : "sun");
-}
-function toggleTheme() {
-  DB.settings.theme = DB.settings.theme === "light" ? "dark" : "light";
-  DB.saveSettings();
-  applyTheme();
+  document.documentElement.dataset.theme = DB.settings.theme || "light";
 }
 
 /* ---------- init ---------- */
@@ -116,26 +110,26 @@ function logoMarkup() {
 function wireStaticIcons() {
   $("logo-holder").innerHTML = logoMarkup();
   $("home-btn").innerHTML = icon("home") + "<span>Home</span>";
-  $("create-bot-btn").innerHTML = icon("plus") + "<span>Create Bot</span>";
+  $("create-bot-btn").innerHTML = icon("plus", null, true) + "<span>Create Bot</span>";
   $("settings-btn").innerHTML = icon("settings") + "<span>Settings</span>";
   $("back-btn").innerHTML = icon("back");
-  $("new-chat-btn").innerHTML = icon("plus") + "<span>New Chat</span>";
+  $("new-chat-btn").innerHTML = icon("plus", null, true) + "<span>New Chat</span>";
   $("history-btn").innerHTML = icon("history") + "<span>History</span>";
   $("export-chat-btn").innerHTML = icon("download") + "<span>Export</span>";
   $("edit-bot-btn").innerHTML = icon("edit") + "<span>Edit</span>";
   $("scroll-bottom-btn").innerHTML = icon("chevron-down");
   $("refresh-models-btn").innerHTML = icon("refresh");
-  $("persona-add-btn").innerHTML = icon("plus");
-  $("persona-del-btn").innerHTML = icon("trash");
+  $("persona-add-btn").innerHTML = icon("plus", null, true);
+  $("persona-del-btn").innerHTML = icon("trash", null, true);
   $("export-btn").innerHTML = icon("download") + "<span>Export backup</span>";
   $("import-btn").innerHTML = icon("upload") + "<span>Import backup / bot</span>";
   $("reset-btn").innerHTML = icon("alert") + "<span>Reset everything</span>";
-  $("preview-fullscreen-close").innerHTML = icon("x") + "<span>Close</span>";
-  $("sidebar-close-btn").innerHTML = icon("x");
+  $("preview-fullscreen-close").innerHTML = icon("x", null, true) + "<span>Close</span>";
+  $("sidebar-close-btn").innerHTML = icon("x", null, true);
   $("sidebar-open-btn").innerHTML = icon("menu");
   $("home-sidebar-open-btn").innerHTML = icon("menu");
   $("image-attach-btn").innerHTML = icon("image");
-  $("image-attach-remove").innerHTML = icon("x");
+  $("image-attach-remove").innerHTML = icon("x", null, true);
   setSendButton(false);
 }
 
@@ -169,7 +163,6 @@ function init() {
   /* sidebar */
   $("home-btn").onclick = () => { goHome(); closeSidebar(); };
   $("create-bot-btn").onclick = () => { openBotEditor(null); closeSidebar(); };
-  $("theme-btn").onclick = toggleTheme;
   $("sidebar-search").addEventListener("input", renderSidebar);
   $("conn-status").onclick = checkConnection;
   $("sidebar-close-btn").onclick = closeSidebar;
@@ -285,7 +278,7 @@ function init() {
       if (!code) return;
       downloadText(code.textContent, dlBtn.dataset.filename || "snippet.txt", "text/plain");
       dlBtn.classList.add("copied");
-      dlBtn.innerHTML = icon("check") + "<span>Saved</span>";
+      dlBtn.innerHTML = icon("check", null, true) + "<span>Saved</span>";
       setTimeout(() => {
         dlBtn.classList.remove("copied");
         dlBtn.innerHTML = icon("download") + "<span>Save</span>";
@@ -319,7 +312,7 @@ function init() {
         pane.appendChild(iframe);
         pane.addEventListener("click", () => iframe.contentWindow?.focus());
         pane.hidden = false;
-        previewBtn.innerHTML = icon("x") + "<span>Hide</span>";
+        previewBtn.innerHTML = icon("x", null, true) + "<span>Hide</span>";
         if (expandBtn) expandBtn.hidden = false;
       }
       return;
@@ -342,7 +335,7 @@ function init() {
     if (!code) return;
     copyText(code.textContent);
     btn.classList.add("copied");
-    btn.innerHTML = icon("check") + "<span>Copied</span>";
+    btn.innerHTML = icon("check", null, true) + "<span>Copied</span>";
     setTimeout(() => {
       btn.classList.remove("copied");
       btn.innerHTML = icon("copy") + "<span>Copy</span>";

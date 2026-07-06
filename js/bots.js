@@ -156,8 +156,8 @@ function processImageFile(file) {
 function wireBotEditor() {
   /* icon labels on static buttons */
   $("img-upload-btn").innerHTML = icon("image") + "<span>Upload</span>";
-  $("img-remove-btn").innerHTML = icon("x") + "<span>Remove</span>";
-  $("bot-delete-btn").innerHTML = icon("trash") + "<span>Delete</span>";
+  $("img-remove-btn").innerHTML = icon("x", null, true) + "<span>Remove</span>";
+  $("bot-delete-btn").innerHTML = icon("trash", null, true) + "<span>Delete</span>";
   $("bot-duplicate-btn").innerHTML = icon("copy") + "<span>Duplicate</span>";
   $("bot-export-btn").innerHTML = icon("share") + "<span>Share</span>";
 
@@ -310,7 +310,7 @@ function renderCategoryList() {
     row.appendChild(input);
     const count = DB.bots.filter(b => b.category === cat.id).length;
     row.appendChild(el("span", "category-count", count + (count === 1 ? " bot" : " bots")));
-    const del = iconBtn("trash", "btn sm danger icon-only", "Delete category");
+    const del = iconBtn("trash", "btn sm danger icon-only", "Delete category", null, true);
     del.onclick = () => {
       if (count && !confirm('Delete "' + cat.name + '"? ' + count + ' bot(s) will become Uncategorized.')) return;
       DB.deleteCategory(cat.id);
@@ -323,7 +323,7 @@ function renderCategoryList() {
 }
 
 function wireCategoryManager() {
-  $("category-add-btn").innerHTML = icon("plus") + "<span>Add</span>";
+  $("category-add-btn").innerHTML = icon("plus", null, true) + "<span>Add</span>";
   $("category-add-btn").onclick = () => {
     const name = $("category-new-name").value.trim();
     if (!name) return;

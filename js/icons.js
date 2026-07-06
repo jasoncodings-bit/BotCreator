@@ -77,6 +77,18 @@ const ICONS = {
 
 const AVATAR_ICONS = ["bot","skull","ghost","crown","sword","shield","rocket","star","flame","snowflake","gamepad","music","cpu","gem","cat","wizard","eye","zap","heart","globe","anchor","book","flask","dice","pickaxe","alien","target","code","vampire","butler","sprout","eyetri","brew"];
 
+/* solid-shape path data for the small everyday UI icons (favorite,
+   add, remove, confirm, delete) — these are simple enough to read
+   well as filled glyphs, unlike outline icons such as home/settings. */
+const ICONS_FILLED = {
+  star: '<path d="m12 2 3 7 7 .5-5.5 4.5 2 7-6.5-4-6.5 4 2-7L2 9.5 9 9l3-7Z"/>',
+  heart: '<path d="M12 21C6 16 2 12.5 2 8.5 2 6 4 4 6.5 4c2 0 3.5 1 5.5 3 2-2 3.5-3 5.5-3C20 4 22 6 22 8.5c0 4-4 7.5-10 12.5Z"/>',
+  plus: '<path d="M11 3h2v8h8v2h-8v8h-2v-8H3v-2h8Z"/>',
+  x: '<path d="M6.7 4.6 12 9.9l5.3-5.3 1.4 1.4L13.4 11.3l5.3 5.3-1.4 1.4-5.3-5.3-5.3 5.3-1.4-1.4 5.3-5.3-5.3-5.3Z"/>',
+  check: '<path d="M8.6 18.4 3 12.8l2.3-2.3 3.3 3.3L18.7 3.7 21 6Z"/>',
+  trash: '<path d="M8 4V2h8v2h5v2h-1.1l-1 15a1 1 0 0 1-1 .9H6.1a1 1 0 0 1-1-.9L4.1 6H3V4Zm2 4v11h1.5V8Zm3 0v11h1.5V8Zm3.5 0v11H18V8Z"/>'
+};
+
 /* common everyday words that don't exist verbatim in Lucide's naming ->
    the closest real icon name in the vendored catalogue. Covers the gap
    between how a bot would naturally phrase a concept and how Lucide
@@ -114,7 +126,12 @@ function hasIcon(name) {
   return resolveIconName(name) !== null;
 }
 
-function icon(name, cls) {
+function icon(name, cls, filled) {
+  if (filled && ICONS_FILLED[name]) {
+    return '<svg class="ic' + (cls ? " " + cls : "") +
+      '" viewBox="0 0 24 24" fill="currentColor" stroke="none" aria-hidden="true">' +
+      ICONS_FILLED[name] + "</svg>";
+  }
   const resolved = resolveIconName(name) || "bot";
   const markup = ICONS[resolved] ||
     (typeof LUCIDE_ICONS !== "undefined" && LUCIDE_ICONS[resolved]) || ICONS.bot;
@@ -125,11 +142,11 @@ function icon(name, cls) {
 }
 
 /* button whose content is an icon (optionally with a text label) */
-function iconBtn(name, cls, title, label) {
+function iconBtn(name, cls, title, label, filled) {
   const b = document.createElement("button");
   b.type = "button";
   if (cls) b.className = cls;
   if (title) b.title = title;
-  b.innerHTML = icon(name) + (label ? "<span>" + label + "</span>" : "");
+  b.innerHTML = icon(name, null, filled) + (label ? "<span>" + label + "</span>" : "");
   return b;
 }

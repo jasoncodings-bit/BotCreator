@@ -44,7 +44,7 @@ const DEFAULT_SETTINGS = {
   url: "http://127.0.0.1:8081",
   model: "",
   maxTokens: 1024,
-  theme: "dark",
+  theme: "light",
   userName: "",
   userPersona: "",
   autoContinue: true,

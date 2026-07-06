@@ -10,7 +10,6 @@
   align-items: center;
   justify-content: center;
   z-index: 100;
-  backdrop-filter: blur(3px);
 }
 .modal-overlay.open { display: flex; }
 
@@ -23,7 +22,6 @@
   overflow-y: auto;
   padding: 24px;
   animation: fadeIn 0.15s ease;
-  box-shadow: var(--shadow);
 }
 .modal.modal-wide { width: min(760px, calc(100vw - 32px)); }
 .modal h2 { font-size: 19px; margin-bottom: 18px; }

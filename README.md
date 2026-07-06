@@ -18,6 +18,35 @@ All libraries (math.js, Lucide icons, OpenDyslexic font) are vendored into `js/v
 3. Open Settings in the app and confirm/change the API base URL if your server isn't on the
    default `127.0.0.1:8081`.
 
+## Deploying updates
+
+This folder is the git repo for https://github.com/jasoncodings-bit/BotCreator (`main` branch).
+There's no build/deploy pipeline — "deploying" just means pushing the static files.
+
+1. Make your changes locally and test them (see "Testing" below — at minimum reload the app and
+   click through the feature you touched).
+2. Stage and commit:
+   ```
+   git add -A
+   git commit -m "describe the change"
+   ```
+3. Push:
+   ```
+   git push origin main
+   ```
+   Credentials are cached locally via `credential.helper store` (set up once already) — pushes
+   shouldn't prompt for auth. If push ever fails with an auth error, you'll need a fresh GitHub
+   fine-grained PAT (repo: BotCreator, permission: Contents → Read and write) re-stored the same
+   way — **never paste a live token into a chat/AI conversation**; write it to a local file, feed
+   that file to the credential store, then delete the file.
+4. Anyone pulling the repo just re-serves the folder (`python -m http.server 8000` or opens
+   `index.html` via `file://`) — there's nothing to build or install.
+
+Since there's no CI/build step, a bad push goes live (to anyone pulling `main`) immediately with
+no gate. For anything riskier than a small tweak, test thoroughly first (see "Testing" below), and
+consider committing in small, revertable chunks so `git revert`/`git reset` has a clean point to
+go back to if something breaks.
+
 ## Architecture at a glance
 
 - **No build step.** Every `js/*.js` file is loaded as a plain `<script>` tag from `index.html`,

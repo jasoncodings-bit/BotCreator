@@ -127,7 +127,7 @@ function renderHistoryPopover() {
   const pop = $("history-popover");
   pop.innerHTML = "";
 
-  const newBtn = iconBtn("plus", "pop-new", "Start a fresh chat", "New Chat");
+  const newBtn = iconBtn("plus", "pop-new", "Start a fresh chat", "New Chat", true);
   newBtn.onclick = newChat;
   pop.appendChild(newBtn);
 
@@ -142,7 +142,7 @@ function renderHistoryPopover() {
     ren.onclick = e => { e.stopPropagation(); startRenameSession(s, row, title); };
     row.appendChild(ren);
 
-    const del = iconBtn("trash", "pop-act del", "Delete chat");
+    const del = iconBtn("trash", "pop-act del", "Delete chat", null, true);
     del.onclick = e => { e.stopPropagation(); deleteSessionUI(s.id); };
     row.appendChild(del);
 

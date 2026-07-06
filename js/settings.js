@@ -13,6 +13,7 @@ function openSettings() {
   $("set-maxtok").value = DB.settings.maxTokens;
   $("maxtok-val").textContent = DB.settings.maxTokens;
   $("set-autocontinue").checked = !!DB.settings.autoContinue;
+  $("set-darkmode").checked = DB.settings.theme === "dark";
   $("set-dyslexiafont").checked = !!DB.settings.dyslexiaFont;
   $("settings-test-result").textContent = "";
   $("settings-test-result").className = "";
@@ -124,10 +125,12 @@ function saveSettingsFromModal() {
   DB.settings.model = $("set-model").value;
   DB.settings.maxTokens = parseInt($("set-maxtok").value, 10) || 1024;
   DB.settings.autoContinue = $("set-autocontinue").checked;
+  DB.settings.theme = $("set-darkmode").checked ? "dark" : "light";
   DB.settings.dyslexiaFont = $("set-dyslexiafont").checked;
   DB.settings.personas = workPersonas;
   DB.settings.activePersona = $("persona-select").value;
   DB.saveSettings();
+  applyTheme();
   applyDyslexiaFont();
   closeSettings();
   toast("Settings saved");

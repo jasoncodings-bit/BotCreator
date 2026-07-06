@@ -20,7 +20,7 @@ function renderHome() {
     const create = el("div", "bot-card create-card");
     const inner = el("div", "create-inner");
     const plus = el("div", "plus");
-    plus.innerHTML = icon("plus");
+    plus.innerHTML = icon("plus", null, true);
     inner.appendChild(plus);
     inner.appendChild(el("div", "", "Create a Bot"));
     inner.appendChild(el("div", "sub", "Forge a brand new character"));
@@ -71,7 +71,7 @@ function botCard(bot) {
     cover.appendChild(big);
   }
   const fav = iconBtn("star", "card-favorite" + (bot.favorite ? " active" : ""),
-    bot.favorite ? "Remove from favourites" : "Add to favourites");
+    bot.favorite ? "Remove from favourites" : "Add to favourites", null, true);
   fav.onclick = e => { e.stopPropagation(); DB.toggleFavorite(bot.id); renderHome(); };
   cover.appendChild(fav);
   const edit = iconBtn("edit", "card-edit", "Edit bot");
