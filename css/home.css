@@ -6,6 +6,17 @@
   flex: 1;
   overflow-y: auto;
   padding: 32px 36px;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+}
+/* #home-sections absorbs any leftover vertical space so #home-footer
+   always sits at the true bottom of the view instead of trailing
+   right after a short result list with a gap of bare background
+   below it (only visible when content is shorter than the viewport
+   — long lists still scroll normally since #home-view itself scrolls) */
+#home-sections {
+  flex: 1;
 }
 #home-head {
   display: flex;
@@ -42,9 +53,15 @@
 }
 .home-empty {
   color: var(--text-dim);
-  font-size: 14px;
+  font-family: "Jersey M54", "Segoe UI Black", "Segoe UI Variable", "Arial Black", "Segoe UI", system-ui, sans-serif;
+  font-size: 22px;
+  letter-spacing: 0.02em;
   padding: 40px 0;
   text-align: center;
+  min-height: 320px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .bot-grid {

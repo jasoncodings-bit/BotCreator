@@ -6,6 +6,7 @@
 
 #home-hero {
   position: relative;
+  flex-shrink: 0;
   margin: -32px -36px 28px;
   background: linear-gradient(135deg, var(--accent) 0%, var(--accent-hover) 100%);
   overflow: hidden;
@@ -23,27 +24,39 @@
   color: #fff;
   font-size: 34px;
   display: inline-block;
-  animation: botivo-hero-float 6s ease-in-out infinite;
+  animation: botivo-hero-float-a 5.5s ease-in-out infinite;
 }
 #home-hero #home-head .sub {
   color: rgba(255, 255, 255, 0.85);
   font-size: 15px;
   display: inline-block;
-  animation: botivo-hero-float 6s ease-in-out infinite;
-  animation-delay: -0.6s;
+  animation: botivo-hero-float-b 7s ease-in-out infinite;
+  animation-delay: -2.1s;
 }
 #home-hero #home-search {
   background: rgba(255, 255, 255, 0.92);
   border: 1px solid #000;
-  animation: botivo-hero-float 6s ease-in-out infinite;
-  animation-delay: -1.2s;
+  animation: botivo-hero-float-c 6.2s ease-in-out infinite;
+  animation-delay: -3.8s;
 }
 
-/* gentle bob synced to the wave's pace, giving the loose feel of
-   floating on it rather than a literal 1:1 physical link */
-@keyframes botivo-hero-float {
+/* three distinct bob curves (different duration, amplitude, and
+   easing shape per element) so the heading/subtitle/search drift
+   in and out of phase with each other instead of moving in the
+   same rigid lockstep — reads as loose/organic instead of robotic */
+@keyframes botivo-hero-float-a {
   0%, 100% { transform: translateY(0); }
-  50%      { transform: translateY(-6px); }
+  50%      { transform: translateY(-7px); }
+}
+@keyframes botivo-hero-float-b {
+  0%, 100%  { transform: translateY(0); }
+  35%       { transform: translateY(-4px); }
+  70%       { transform: translateY(-8px); }
+}
+@keyframes botivo-hero-float-c {
+  0%, 100% { transform: translateY(0); }
+  45%      { transform: translateY(-5px); }
+  80%      { transform: translateY(-2px); }
 }
 
 @media (prefers-reduced-motion: reduce) {

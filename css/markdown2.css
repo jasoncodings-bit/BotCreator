@@ -1,0 +1,252 @@
+/* ============================================================
+   Bot Master — more common fenced blocks: ```faq```, ```steps```,
+   ```fields```, ```pros``` / ```cons``` (see js/markdown2.js)
+   ============================================================ */
+
+/* ==================== FAQ ==================== */
+.faqblock {
+  margin: 8px 0;
+  border: 1px solid var(--border);
+  border-radius: 2px;
+  overflow: hidden;
+  background: var(--bg-2);
+}
+.faq-item { border-top: 1px solid var(--border); }
+.faq-item:first-child { border-top: none; }
+.faq-q {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  padding: 11px 12px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  text-align: left;
+  font: inherit;
+  color: inherit;
+  font-weight: 600;
+  font-size: 13.5px;
+}
+.faq-q:hover { background: var(--bg-3); }
+.faq-q-text { flex: 1; }
+.faq-chevron {
+  flex-shrink: 0;
+  opacity: 0.55;
+  transition: transform 0.18s ease;
+}
+.faq-chevron .ic { width: 15px; height: 15px; }
+.faq-item[data-open="true"] .faq-chevron { transform: rotate(180deg); }
+.faq-a {
+  padding: 2px 12px 12px 12px;
+  font-size: 13.5px;
+  line-height: 1.5;
+  color: var(--text-dim);
+}
+.faq-a > :first-child { margin-top: 0; }
+.faq-a > :last-child { margin-bottom: 0; }
+
+/* ==================== STEPS ==================== */
+.stepsblock {
+  margin: 10px 0;
+  padding: 4px 0 4px 6px;
+}
+.step-item {
+  position: relative;
+  display: flex;
+  gap: 12px;
+  padding: 0 0 14px 0;
+}
+.step-item:last-child { padding-bottom: 0; }
+/* connecting spine between the numbered markers */
+.step-item::before {
+  content: "";
+  position: absolute;
+  left: 13px;
+  top: 28px;
+  bottom: 0;
+  width: 2px;
+  background: var(--border);
+}
+.step-item:last-child::before { display: none; }
+.step-num {
+  position: relative;
+  z-index: 1;
+  flex-shrink: 0;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--accent);
+  color: #fff;
+  font-size: 13px;
+  font-weight: 700;
+}
+.step-body {
+  padding-top: 4px;
+  font-size: 13.5px;
+  line-height: 1.5;
+}
+
+/* ==================== FIELDS ==================== */
+.fieldsblock {
+  margin: 8px 0;
+  border: 1px solid var(--border);
+  border-radius: 2px;
+  overflow: hidden;
+  background: var(--bg-2);
+}
+.fields-head {
+  padding: 9px 12px;
+  background: var(--bg-3);
+  border-bottom: 1px solid var(--border);
+  font-size: 13px;
+  font-weight: 700;
+}
+.fields-body { display: flex; flex-direction: column; }
+.field-row {
+  display: flex;
+  gap: 12px;
+  padding: 8px 12px;
+  border-top: 1px solid var(--border);
+  font-size: 13.5px;
+  line-height: 1.45;
+}
+.field-row:first-child { border-top: none; }
+.field-label {
+  flex-shrink: 0;
+  min-width: 34%;
+  color: var(--text-dim);
+  font-weight: 600;
+}
+.field-value { flex: 1; text-align: right; }
+.field-note {
+  padding: 7px 12px;
+  border-top: 1px solid var(--border);
+  font-size: 12.5px;
+  color: var(--text-dim);
+  font-style: italic;
+}
+
+/* ==================== PROS / CONS ==================== */
+.prosconsblock {
+  margin: 8px 0;
+  border: 1px solid var(--border);
+  border-radius: 2px;
+  overflow: hidden;
+  background: var(--bg-2);
+}
+.pc-head {
+  padding: 9px 12px;
+  border-bottom: 1px solid var(--border);
+  font-size: 13px;
+  font-weight: 700;
+}
+.pc-pros .pc-head { color: var(--green); background: rgba(61, 220, 132, 0.10); }
+.pc-cons .pc-head { color: var(--red); background: var(--red-soft); }
+.pc-body { display: flex; flex-direction: column; }
+.pc-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 9px;
+  padding: 8px 12px;
+  border-top: 1px solid var(--border);
+  font-size: 13.5px;
+  line-height: 1.45;
+}
+.pc-item:first-child { border-top: none; }
+.pc-mark {
+  flex-shrink: 0;
+  margin-top: 1px;
+  display: flex;
+}
+.pc-mark .ic { width: 15px; height: 15px; }
+.pc-pros .pc-mark { color: var(--green); }
+.pc-cons .pc-mark { color: var(--red); }
+.pc-text { flex: 1; }
+
+/* ==================== TLDR ==================== */
+.tldrblock {
+  display: flex;
+  gap: 12px;
+  margin: 10px 0;
+  padding: 12px 14px;
+  background: rgba(255, 159, 64, 0.08);
+  border: 1px solid var(--border);
+  border-left: 3px solid var(--accent);
+  border-radius: 2px;
+}
+.tldr-tag {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--accent);
+  padding-top: 2px;
+}
+.tldr-tag .ic { width: 15px; height: 15px; }
+.tldr-body { flex: 1; font-size: 13.5px; line-height: 1.5; }
+.tldr-body > :first-child { margin-top: 0; }
+.tldr-body > :last-child { margin-bottom: 0; }
+
+/* ==================== KEYS ==================== */
+.keysblock {
+  margin: 8px 0;
+  border: 1px solid var(--border);
+  border-radius: 2px;
+  overflow: hidden;
+  background: var(--bg-2);
+}
+.keys-head {
+  padding: 9px 12px;
+  background: var(--bg-3);
+  border-bottom: 1px solid var(--border);
+  font-size: 13px;
+  font-weight: 700;
+}
+.keys-body { display: flex; flex-direction: column; }
+.key-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 8px 12px;
+  border-top: 1px solid var(--border);
+  font-size: 13.5px;
+}
+.key-row:first-child { border-top: none; }
+.key-action { flex: 1; }
+.key-combo {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  gap: 3px;
+}
+.key-plus { opacity: 0.4; font-size: 11px; }
+
+/* ==================== DEFINE ==================== */
+.defineblock {
+  margin: 8px 0;
+  padding: 12px 14px;
+  background: var(--bg-2);
+  border: 1px solid var(--border);
+  border-radius: 2px;
+}
+.define-term {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--accent-2);
+  margin-bottom: 6px;
+}
+.define-term .ic { width: 17px; height: 17px; }
+.define-body { font-size: 13.5px; line-height: 1.55; color: var(--text-dim); }
+.define-body > :first-child { margin-top: 0; }
+.define-body > :last-child { margin-bottom: 0; }

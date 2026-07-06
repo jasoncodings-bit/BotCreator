@@ -408,7 +408,20 @@ function buildApiMessages() {
     "off one at a time — each line becomes its own independently clickable checkbox with a live done-count. " +
     "Use ```reveal: a short teaser``` for a plot twist, riddle answer, or surprise — put the hidden payoff " +
     "on the lines inside; it shows only the teaser until clicked, then flips open with a flourish (use this " +
-    "instead of ```details``` when the reveal itself is meant to feel dramatic, not just tucked away). And " +
+    "instead of ```details``` when the reveal itself is meant to feel dramatic, not just tucked away). " +
+    "Use ```faq``` (one \"Q: question\" line followed by its \"A: answer\" line, repeated) for common " +
+    "questions, help/support answers, or any set of question/answer pairs — each becomes a click-to-expand " +
+    "item. Use ```steps``` (one instruction per line) for a how-to or ordered procedure — it renders as a " +
+    "numbered flow with a connecting spine (prefer this over a plain \"1. 2. 3.\" list for real step-by-step " +
+    "instructions). Use ```fields: Optional Title``` (one \"Label: value\" per line) to lay out structured " +
+    "facts as a clean labelled card — a profile, an order summary, specs, a character sheet — when the values " +
+    "are text rather than the big numbers ```stats``` is for. Use ```pros: Heading``` (one plus per line) " +
+    "and/or ```cons: Heading``` (one minus per line) to weigh up one side on its own with green ticks or red " +
+    "crosses (use ```compare``` instead when you want both sides in side-by-side columns). Use ```tldr``` " +
+    "(a sentence or two inside) at the end of a long answer for the single key takeaway — the one thing to " +
+    "remember — rendered as a highlighted lightbulb box. Use ```keys``` (one \"Action: Ctrl+S\" per line) to " +
+    "list keyboard shortcuts — each combo renders as real key chips. Use ```define: Term``` (the definition " +
+    "on the lines inside) for a \"what is X?\" answer, rendering the term as a glossary card. And " +
     "use ```story```/```poem``` blocks whenever the user asks " +
     "you to write a story, poem, script, " +
     "or other long-form creative writing — put ONLY the piece itself inside the fence (no extra commentary " +

@@ -99,9 +99,12 @@ function applyTheme() {
    black outline — the fill color is driven by currentColor (red/green
    connection state) but the outline never changes and there's no
    glow/filter effect. Original silhouette (rounded dome, single
-   antenna, dot eyes) — not a copy of any third-party robot mascot. */
+   antenna, dot eyes, two grey ear bumps on the sides) — not a copy
+   of any third-party robot mascot. */
 function logoMarkup() {
   return '<svg class="ic" viewBox="0 0 24 24" aria-hidden="true">' +
+    '<circle cx="4.3" cy="12.5" r="2" fill="#9aa1b5" stroke="#000" stroke-width="1.1"/>' +
+    '<circle cx="19.7" cy="12.5" r="2" fill="#9aa1b5" stroke="#000" stroke-width="1.1"/>' +
     '<path d="M12 2.2v2.1" stroke="#000" stroke-width="1.6" stroke-linecap="round"/>' +
     '<circle cx="12" cy="2.3" r="1.15" fill="currentColor" stroke="#000" stroke-width="1.2"/>' +
     '<path d="M5.5 10.5A6.5 6.5 0 0 1 12 5a6.5 6.5 0 0 1 6.5 5.5V16a2.5 2.5 0 0 1-2.5 2.5H8A2.5 2.5 0 0 1 5.5 16Z" ' +
@@ -264,6 +267,17 @@ function init() {
       if (!card) return;
       card.dataset.revealed = "true";
       card.querySelector(".reveal-back").hidden = false;
+      return;
+    }
+
+    const faqToggle = e.target.closest(".faq-q");
+    if (faqToggle) {
+      const item = faqToggle.closest(".faq-item");
+      if (!item) return;
+      const open = item.dataset.open !== "true";
+      item.dataset.open = open ? "true" : "false";
+      const ans = item.querySelector(".faq-a");
+      if (ans) ans.hidden = !open;
       return;
     }
 

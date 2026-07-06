@@ -522,6 +522,15 @@ function mdInline(s) {
   s = s.replace(/~~([^~]+)~~/g, "<s>$1</s>");
   s = s.replace(/\[([^\]]+)\]\((https?:\/\/[^\s)]+)\)/g,
     '<a href="$2" target="_blank" rel="noopener noreferrer">$1</a>');
+  /* bare URLs a bot just typed (not already inside a markdown link's
+     href, guarded by the lookbehind) become clickable blue links too.
+     trailing sentence punctuation is left outside the link. */
+  s = s.replace(/(^|[\s(])(https?:\/\/[^\s<]+)/g, (m, pre, url) => {
+    const trail = url.match(/[.,;:!?)\]]+$/);
+    let tail = "";
+    if (trail) { tail = trail[0]; url = url.slice(0, -tail.length); }
+    return pre + '<a href="' + url + '" target="_blank" rel="noopener noreferrer">' + url + "</a>" + tail;
+  });
   s = s.replace(new RegExp(MD_CODE + "(\\d+)" + MD_CODE, "g"),
     (m, i) => "<code>" + codes[+i] + "</code>");
   return s;
@@ -652,6 +661,13 @@ function renderMarkdown(src) {
       else if (/^quote:?/i.test(lang)) html += quoteBlockHtml(block, lang);
       else if (lang === "checklist") html += checklistBlockHtml(block);
       else if (/^reveal:?/i.test(lang)) html += revealBlockHtml(block, lang);
+      else if (lang === "faq") html += faqBlockHtml(block);
+      else if (lang === "steps") html += stepsBlockHtml(block);
+      else if (/^fields:?/i.test(lang)) html += fieldsBlockHtml(block, lang);
+      else if (/^(pros|cons)\s*:?/i.test(lang)) html += prosConsBlockHtml(block, lang);
+      else if (/^(tldr|summary|takeaway)\s*:?/i.test(lang)) html += tldrBlockHtml(block, lang);
+      else if (/^(keys?|shortcuts?|hotkeys?)\s*:?/i.test(lang)) html += keysBlockHtml(block, lang);
+      else if (/^(define|def|glossary|term)\s*:?/i.test(lang)) html += defineBlockHtml(block, lang);
       else if (/^game:?/i.test(lang)) html += gameBlockHtml(block, lang);
       else html += codeBlockHtml(block, previewGroups[+cb[1]]);
       continue;
