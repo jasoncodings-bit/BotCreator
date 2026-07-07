@@ -175,6 +175,7 @@ function init() {
   DB.init();
   scheduleBootLoaderHide();
   wireStaticIcons();
+  initBoilingBrand();
   applyTheme();
   applyDyslexiaFont();
   applyAppearance();
@@ -375,6 +376,7 @@ function init() {
   });
 
   /* modals & editor */
+  wireImageCropper();
   wireBotEditor();
   wireCategoryManager();
   wireSettings();

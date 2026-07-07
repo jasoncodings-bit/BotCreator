@@ -1,0 +1,20 @@
+/* ============================================================
+   Bot Master — image crop modal (bot avatar upload)
+   ============================================================ */
+
+#crop-stage {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 14px;
+}
+#crop-canvas {
+  width: 100%;
+  max-width: 360px;
+  aspect-ratio: 1;
+  background: var(--bg-3);
+  border: 1px solid var(--border);
+  border-radius: 2px;
+  cursor: grab;
+  touch-action: none;
+}
+#crop-canvas:active { cursor: grabbing; }

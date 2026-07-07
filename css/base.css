@@ -128,13 +128,11 @@ button { font-family: inherit; }
   cursor: pointer;
   transition: all 0.15s;
 }
-.nav-btn:hover { background: var(--bg-4); }
 .nav-btn.accent {
   background: var(--grad);
   border: none;
   color: #fff;
 }
-.nav-btn.accent:hover { filter: brightness(1.12); }
 
 #sidebar-search-wrap { padding: 10px 14px 6px; }
 #sidebar-search {

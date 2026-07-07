@@ -347,7 +347,7 @@ function setSendButton(stop) {
 function autoGrow() {
   const input = $("msg-input");
   input.style.height = "auto";
-  input.style.height = Math.min(input.scrollHeight, 170) + "px";
+  input.style.height = Math.min(input.scrollHeight, 42) + "px";
 }
 
 function persistMsgs() { persistMsgsFor(State.sessionId, State.msgs); }

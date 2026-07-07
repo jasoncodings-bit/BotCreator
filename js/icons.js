@@ -86,7 +86,7 @@ const ICONS_FILLED = {
   plus: '<path d="M11 3h2v8h8v2h-8v8h-2v-8H3v-2h8Z"/>',
   x: '<path d="M6.7 4.6 12 9.9l5.3-5.3 1.4 1.4L13.4 11.3l5.3 5.3-1.4 1.4-5.3-5.3-5.3 5.3-1.4-1.4 5.3-5.3-5.3-5.3Z"/>',
   check: '<path d="M8.6 18.4 3 12.8l2.3-2.3 3.3 3.3L18.7 3.7 21 6Z"/>',
-  trash: '<path d="M8 4V2h8v2h5v2h-1.1l-1 15a1 1 0 0 1-1 .9H6.1a1 1 0 0 1-1-.9L4.1 6H3V4Zm2 4v11h1.5V8Zm3 0v11h1.5V8Zm3.5 0v11H18V8Z"/>'
+  trash: '<path fill-rule="evenodd" d="M9 3.5A1.5 1.5 0 0 1 10.5 2h3A1.5 1.5 0 0 1 15 3.5V5h5v2h-1l-1.1 13.2A2 2 0 0 1 15.9 22H8.1a2 2 0 0 1-2-1.8L5 7H4V5h5V3.5ZM7.02 7l1.09 13H15.9l1.09-13H7.02ZM10.25 9.5h1.5v9h-1.5v-9Zm3.5 0h1.5v9h-1.5v-9Z"/>'
 };
 
 /* common everyday words that don't exist verbatim in Lucide's naming ->

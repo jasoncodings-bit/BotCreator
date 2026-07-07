@@ -4,7 +4,7 @@
    page load, then fades it out once the app has initialized.
    ============================================================ */
 
-const BOOT_LOADER_MS = 3000;
+const BOOT_LOADER_MS = 4000;
 const BOOT_LOADER_STATUSES = [
   "Waking up the bots…",
   "Connecting locally…",
@@ -15,6 +15,7 @@ function hideBootLoader() {
   const el = $("boot-loader");
   if (!el) return;
   el.classList.add("hide");
+  stopLetterfield();
   setTimeout(() => el.remove(), 400);
 }
 
@@ -32,6 +33,7 @@ function cycleBootLoaderStatus() {
 }
 
 function scheduleBootLoaderHide() {
+  startLetterfield();
   cycleBootLoaderStatus();
   setTimeout(hideBootLoader, BOOT_LOADER_MS);
 }

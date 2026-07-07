@@ -1,0 +1,64 @@
+/* ============================================================
+   Sidebar nav buttons (Home / Create Bot) + home "Chat" button —
+   side wipe hover, adapted from css/Vendors/Buttons/Button.css
+   (btn-15 style), recolored to the app's orange accent.
+   ============================================================ */
+
+.nav-btn {
+  position: relative;
+  overflow: hidden;
+  z-index: 1;
+  background: var(--accent);
+  border: none;
+  color: #fff;
+}
+.nav-btn::after {
+  content: "";
+  position: absolute;
+  z-index: -1;
+  top: 0;
+  right: 0;
+  width: 0;
+  height: 100%;
+  background: var(--accent-hover);
+  transition: all 0.3s ease;
+}
+.nav-btn:hover::after {
+  left: 0;
+  width: 100%;
+}
+
+.nav-btn.accent {
+  background: var(--grad);
+}
+.nav-btn.accent::after {
+  background: var(--accent-hover);
+}
+
+/* home screen: bot card "Chat" button — same side wipe */
+.card-chat-btn {
+  position: relative;
+  overflow: hidden;
+  z-index: 1;
+  background: var(--accent-soft);
+  color: var(--accent);
+  border: 1px solid transparent;
+}
+.card-chat-btn::after {
+  content: "";
+  position: absolute;
+  z-index: -1;
+  top: 0;
+  right: 0;
+  width: 0;
+  height: 100%;
+  background: var(--accent);
+  transition: all 0.3s ease;
+}
+.card-chat-btn:hover {
+  color: #fff;
+}
+.card-chat-btn:hover::after {
+  left: 0;
+  width: 100%;
+}

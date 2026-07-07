@@ -6,9 +6,12 @@
 <title>Botivo</title>
 <link rel="icon" type="image/png" href="js/vendor/Images/favicon.png">
 <link rel="stylesheet" href="css/loading.css">
+<link rel="stylesheet" href="css/letterfield.css">
 <link rel="stylesheet" href="css/fonts.css">
 <link rel="stylesheet" href="css/base.css">
 <link rel="stylesheet" href="css/home.css">
+<link rel="stylesheet" href="css/navbuttons.css">
+<link rel="stylesheet" href="css/boiling.css">
 <link rel="stylesheet" href="css/hero.css">
 <link rel="stylesheet" href="css/chat.css">
 <link rel="stylesheet" href="css/timeline.css">
@@ -26,6 +29,7 @@
 <link rel="stylesheet" href="css/animations.css">
 <link rel="stylesheet" href="css/accessibility.css">
 <link rel="stylesheet" href="css/modals.css">
+<link rel="stylesheet" href="css/imagecrop.css">
 <link rel="stylesheet" href="css/botexport.css">
 <link rel="stylesheet" href="css/commands.css">
 <link rel="stylesheet" href="css/collapse.css">
@@ -39,6 +43,7 @@
 
 <!-- ==================== BOOT LOADER ==================== -->
 <div id="boot-loader">
+  <canvas id="letterfield" aria-hidden="true"></canvas>
   <svg class="pl" viewBox="0 0 128 128" width="128px" height="128px" xmlns="http://www.w3.org/2000/svg">
     <defs>
       <linearGradient id="pl-grad" x1="0" y1="0" x2="0" y2="1">
@@ -59,7 +64,7 @@
 <aside id="sidebar">
   <div id="sidebar-header">
     <h1 id="conn-status" title="Click to re-check connection">
-      <span class="logo" id="logo-holder"></span> <span class="brand">Botivo</span>
+      <span class="logo" id="logo-holder"></span> <canvas class="brand" id="brand-canvas" aria-label="Botivo"></canvas>
     </h1>
     <button id="sidebar-close-btn" type="button" title="Close menu"></button>
   </div>
@@ -280,6 +285,26 @@
   </div>
 </div>
 
+<!-- ==================== IMAGE CROP MODAL ==================== -->
+<div class="modal-overlay" id="crop-modal">
+  <div class="modal modal-narrow">
+    <h2>Crop image</h2>
+    <div id="crop-stage">
+      <canvas id="crop-canvas" width="440" height="440"></canvas>
+    </div>
+    <div class="field">
+      <label>Zoom</label>
+      <input type="range" id="crop-zoom" min="1" max="4" step="0.01" value="1">
+    </div>
+    <div class="hint">Drag to reposition, scroll or use the slider to zoom.</div>
+    <div class="modal-actions">
+      <span class="spacer"></span>
+      <button class="btn" id="crop-cancel-btn" type="button">Cancel</button>
+      <button class="btn primary" id="crop-use-btn" type="button">Use photo</button>
+    </div>
+  </div>
+</div>
+
 <!-- ==================== CATEGORY MANAGER MODAL ==================== -->
 <div class="modal-overlay" id="category-modal">
   <div class="modal modal-narrow">
@@ -492,6 +517,7 @@
 <script src="js/confirm.js"></script>
 <script src="js/api.js"></script>
 <script src="js/home.js"></script>
+<script src="js/imagecrop.js"></script>
 <script src="js/bots.js"></script>
 <script src="js/botexport.js"></script>
 <script src="js/curatedbots.js"></script>
@@ -508,6 +534,8 @@
 <script src="js/collapse.js"></script>
 <script src="js/transitions.js"></script>
 <script src="js/loading.js"></script>
+<script src="js/letterfield.js"></script>
+<script src="js/boiling.js"></script>
 <script src="js/app.js"></script>
 </body>
 </html>

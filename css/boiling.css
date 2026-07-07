@@ -1,0 +1,13 @@
+/* ============================================================
+   "Boiling" sketchy-redraw wordmark for the sidebar brand text,
+   adapted from css/Vendors/Boiling/Boiling.css — reimplemented in
+   plain <canvas> (no React/roughjs/esm.sh, per project house rules).
+   Animation itself lives in js/boiling.js.
+   ============================================================ */
+
+#brand-canvas {
+  display: inline-block;
+  vertical-align: middle;
+  width: 132px;
+  height: 40px;
+}

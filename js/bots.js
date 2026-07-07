@@ -126,30 +126,14 @@ function openBotEditor(botId) {
 
 function closeBotEditor() { $("bot-modal").classList.remove("open"); }
 
-/* ---------- image upload / resize ---------- */
+/* ---------- image upload / crop ---------- */
 function processImageFile(file) {
   if (!file || !file.type.startsWith("image/")) return;
-  const img = new Image();
-  const url = URL.createObjectURL(file);
-  img.onload = () => {
-    const MAX = 640;
-    let w = img.width, h = img.height;
-    const scale = Math.min(1, MAX / Math.max(w, h));
-    w = Math.max(1, Math.round(w * scale));
-    h = Math.max(1, Math.round(h * scale));
-    const c = document.createElement("canvas");
-    c.width = w; c.height = h;
-    const ctx = c.getContext("2d");
-    ctx.fillStyle = "#1a1e29"; // transparent PNGs get a dark backing
-    ctx.fillRect(0, 0, w, h);
-    ctx.drawImage(img, 0, 0, w, h);
-    editorImage = c.toDataURL("image/jpeg", 0.85);
-    URL.revokeObjectURL(url);
+  openImageCropper(file, dataUrl => {
+    editorImage = dataUrl;
     updateEditorPreview();
     toast("Image added — it'll be the bot's cover and avatar");
-  };
-  img.onerror = () => { URL.revokeObjectURL(url); toast("Couldn't read that image"); };
-  img.src = url;
+  });
 }
 
 function wireBotEditor() {
