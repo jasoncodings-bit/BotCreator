@@ -40,7 +40,7 @@ const DEFAULT_CATEGORIES = [
 ];
 
 const DEFAULT_SETTINGS = {
-  url: "http://127.0.0.1:8081",
+  url: "https://develop-solving-expires-stanley.trycloudflare.com",
   model: "",
   maxTokens: 1024,
   theme: "light",
